@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://crynuflkrd7j0" path="res://Script/MapManager.gd" id="1_xgl8j"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
+[ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rgg21"]
 texture = ExtResource("2_rgg21")
@@ -147,3 +148,5 @@ tile_set = SubResource("TileSet_7e4a0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1559490994]
 zoom = Vector2(0.3, 0.3)
+
+[node name="CanvasLayer" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]

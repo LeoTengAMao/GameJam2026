@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cnnifvdf8ntqa"]
+
+[ext_resource type="Script" uid="uid://cf7wxunmy6d3x" path="res://Script/UIManager.gd" id="1_2gmx0"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=834032828]
+script = ExtResource("1_2gmx0")
+
+[node name="HPLabel" type="Label" parent="." unique_id=1615022214]
+offset_right = 74.0
+offset_bottom = 34.0
+text = "HP:"
