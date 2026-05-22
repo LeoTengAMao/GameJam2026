@@ -1,0 +1,43 @@
+# ObjectPool.gd
+class_name ObjectPool
+
+var _pool: Array = []
+var _factory_method: Callable
+var _on_get: Callable
+var _on_return: Callable
+
+# 唯讀屬性：目前池子裡閒置的物件數量
+var count_inactive: int:
+	get: return _pool.size()
+
+# 初始化物件池 (等同於 C# 的建構子)
+func _init(factory_method: Callable, on_get: Callable = Callable(), on_return: Callable = Callable(), initial_capacity: int = 0) -> void:
+	if factory_method.is_null():
+		push_error("factory_method 不能為空！")
+		return
+		
+	_factory_method = factory_method
+	_on_get = on_get
+	_on_return = on_return
+
+	# 預熱 (Pre-warm)
+	for i in range(initial_capacity):
+		_pool.append(_factory_method.call())
+
+# 借出一個物件
+func get_item() -> Variant:
+	var item: Variant
+	if _pool.size() > 0:
+		item = _pool.pop_back() # 從陣列尾端拿，效率最高
+	else:
+		item = _factory_method.call()
+		
+	if not _on_get.is_null():
+		_on_get.call(item)
+	return item
+
+# 歸還一個物件
+func return_item(item: Variant) -> void:
+	if not _on_return.is_null():
+		_on_return.call(item)
+	_pool.append(item)
