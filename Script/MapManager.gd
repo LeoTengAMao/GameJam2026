@@ -2,7 +2,7 @@ extends Node2D
 class_name MapManager
 
 # 定義地塊狀態
-enum CellType { SEA, LAND, COAST }
+enum CellType { SEA, LAND, COAST, VOLCANO }
 
 # 內部類別：每塊土地的專屬資料表
 class CellData:
@@ -29,19 +29,21 @@ const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 @onready var tilemap: TileMapLayer = $TileMapLayer
 
 func _ready():
-	# 假設火山在 (0, 0)
-	var center = Vector2i(0, 0)
-	
-	# 生成 3x3 土地
-	for x in range(-1, 2):
-		for y in range(-1, 2):
-			var pos = center + Vector2i(x, y)
-			# 初始給予 100 血量
-			grid_data[pos] = CellData.new(CellType.LAND, 100)
-	
-	# 計算並更新海岸線狀態與視覺
+	for x in range(-1, 3):
+		for y in range(-1, 3):
+			var pos = Vector2i(x, y)
+			
+			# 判斷是否為正中間的 2x2 火山區：(0,0), (0,1), (1,0), (1,1)
+			if x >= 0 and x <= 1 and y >= 0 and y <= 1:
+				# 這裡是火山！給它更高的初始血量
+				grid_data[pos] = CellData.new(CellType.VOLCANO, 1000)
+			else:
+				# 其他外圍部分是普通土地
+				grid_data[pos] = CellData.new(CellType.LAND, 100)
+		
+		# 計算並更新海岸線狀態與視覺
 	update_all_coasts()
-	print("3x3 初始地圖生成完畢！") # 加入這行
+	print("4x4 初始地圖與火山生成完畢！")
 # 玩家呼叫此函式來填海造陸
 func build_land(pos: Vector2i, starting_hp: int = 100):
 	if grid_data.has(pos) and grid_data[pos].type != CellType.SEA:
@@ -60,6 +62,8 @@ func update_all_coasts():
 	for pos in grid_data.keys():
 		var data: CellData = grid_data[pos]
 		
+		if data.type == CellType.VOLCANO:
+			_set_visual_tile(pos, CellType.VOLCANO)
 		# 只有陸地或海岸需要被重新判定
 		if data.type == CellType.LAND or data.type == CellType.COAST:
 			if _is_adjacent_to_sea(pos):
@@ -105,12 +109,13 @@ func _destroy_land(pos: Vector2i):
 
 func _set_visual_tile(pos: Vector2i, type: CellType):
 	match type:
+		CellType.VOLCANO:
+			tilemap.set_cell(pos, 1, Vector2i(0, 1))# 火山
 		CellType.LAND:
-			# 將原本的 0 改成你剛剛看到的 Source 數字 (這裡以 1 為例)
-			tilemap.set_cell(pos, 1, Vector2i(0, 0)) 
+			tilemap.set_cell(pos, 1, Vector2i(0, 0)) # 綠色陸地
 		CellType.COAST:
-			# 這裡也改成相同的數字
-			tilemap.set_cell(pos, 1, Vector2i(1, 0))
+			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸
+		
 
 # 處理玩家的輸入事件
 func _unhandled_input(event: InputEvent) -> void:
