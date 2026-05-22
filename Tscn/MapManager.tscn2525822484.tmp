@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://crynuflkrd7j0" path="res://Script/MapManager.gd" id="1_xgl8j"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rgg21"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2m3s5"]
 texture = ExtResource("2_rgg21")
 texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
@@ -136,8 +136,7 @@ texture_region_size = Vector2i(128, 128)
 15:7/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_7e4a0"]
-tile_size = Vector2i(128, 128)
-sources/1 = SubResource("TileSetAtlasSource_rgg21")
+sources/3 = SubResource("TileSetAtlasSource_2m3s5")
 
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
@@ -146,4 +145,3 @@ script = ExtResource("1_xgl8j")
 tile_set = SubResource("TileSet_7e4a0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1559490994]
-zoom = Vector2(0.5, 0.5)
