@@ -9,7 +9,6 @@ class_name CooldownRockGenerator
 
 var time_accumulator: float = 0.0
 
-
 func _process(delta: float) -> void:
 	time_accumulator += delta
 	if time_accumulator >= spawn_interval:

@@ -10,6 +10,10 @@ var _areas: Array[GenerateArea] = []
 func register_area(area: GenerateArea) -> void:
 	if not _areas.has(area):
 		_areas.append(area)
+		
+func cancel_area(area: GenerateArea) -> void:
+	if _areas.has(area):
+		_areas.erase(area)
 
 # 依照面積權重，隨機挑選一個 Area
 func _pick_area_by_weight() -> GenerateArea:
