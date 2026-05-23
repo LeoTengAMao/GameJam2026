@@ -12,9 +12,11 @@ class_name CooldownRockGenerator
 
 var time_accumulator: float = 0.0
 
+
 func _ready() -> void:
 	# 新增：在初始化時，監聽火山升級的訊號
 	EventManager.volcano_upgraded.connect(_on_volcano_upgraded)
+
 
 func _process(delta: float) -> void:
 	time_accumulator += delta
