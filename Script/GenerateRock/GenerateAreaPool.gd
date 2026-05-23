@@ -38,10 +38,14 @@ func spawn_area(position: Vector2) -> void:
 	var area = _area_pool.get_item() as GenerateArea
 	area.initialize(position)
 	area.enable()
-	_active_areas[position] = area
+	_active_areas[Vector2i(position / 128.0)] = area
 	print(position, area)
 	
-func destory_area_by_pos(pos: Vector2) -> void:
-	var area = _active_areas[pos]
+func destory_area_by_pos(pos) -> void:
+	var key = Vector2i(int(pos.x), int(pos.y)) if pos is Vector2 else pos
+	if not _active_areas.has(key):
+		return
+	var area = _active_areas[key]
+	_active_areas.erase(key)
 	area.disable()
 	_area_pool.return_item(area)
