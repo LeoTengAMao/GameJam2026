@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
+[ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
 texture = ExtResource("2_7e4a0")
@@ -207,10 +208,13 @@ position = Vector2(-2138, -1436)
 
 [node name="CooldownRockGenerator" parent="." unique_id=992922893 node_paths=PackedStringArray("rock_pool") instance=ExtResource("6_105op")]
 position = Vector2(-2015, -1350)
-spawn_interval = 0.5
+spawn_interval = 1.0
 rock_pool = NodePath("../RockPool")
 
 [node name="AreaPool" type="Node2D" parent="." unique_id=728407797]
 position = Vector2(-2147, -1304)
 script = ExtResource("7_huse1")
 area_scene = ExtResource("8_nvhh3")
+
+[node name="SkillManager" type="Node2D" parent="." unique_id=612887923]
+script = ExtResource("9_105op")

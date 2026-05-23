@@ -12,8 +12,8 @@ signal on_create_land(pos: Vector2)
 # 新增：當石頭數量改變時，用來通知 UI 更新畫面的訊號
 signal stone_count_changed(new_amount: int)
 
-# 新增：當玩家按下升級按鈕時發射 (參數：升級的類型，例如 "volcano")
-signal upgrade_requested(type: String)
+# 原本只有 type，現在加上 upgrade_id 告訴系統具體買了哪一招
+signal upgrade_requested(target_type: String, upgrade_id: String)
 
 # 新增：當升級成功後，通知大家目前的等級與數值
 signal volcano_upgraded(level: int, current_hp: int, max_hp: int)
@@ -31,3 +31,5 @@ signal command_damage_land(pos: Vector2i, damage_amount: int)
 signal command_destroy_land(pos: Vector2i)
 
 signal on_cell_selected(data: Dictionary)
+
+signal close_ui_requested
