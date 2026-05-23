@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://crynuflkrd7j0" path="res://Script/MapManager.gd" id="1_xgl8j"]
 [ext_resource type="Texture2D" uid="uid://b7e3kyp7tcdv8" path="res://Assests/Tile/Yellow-hollow.png" id="2_7e4a0"]
-[ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Tscn/Camera.gd" id="2_huse1"]
+[ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Script/Camera.gd" id="2_huse1"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
-[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
@@ -14,7 +14,9 @@
 [ext_resource type="Shader" uid="uid://wsbnr5jpmsdh" path="res://Assests/Shader/Ocean.gdshader" id="12_bfyrq"]
 [ext_resource type="Script" uid="uid://dnypkcyv7ouxa" path="res://Script/Monster/MonsterPool.gd" id="13_1x38d"]
 [ext_resource type="Script" uid="uid://3fqndhasy1mx" path="res://Script/Monster/MonsterGenerator.gd" id="14_fxjfw"]
-[ext_resource type="PackedScene" uid="uid://6kycchqdqhc5" path="res://Tscn/Monster.tscn" id="14_mea6k"]
+[ext_resource type="PackedScene" uid="uid://c2e7mdk4th0te" path="res://Tscn/Monster.tscn" id="14_mea6k"]
+[ext_resource type="PackedScene" uid="uid://b503cvkerelo2" path="res://Tscn/DebugMenu.tscn" id="16_djb5y"]
+[ext_resource type="Script" uid="uid://b5sumgxy2pibl" path="res://Script/BackgroundController.gd" id="16_erlml"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
 texture = ExtResource("2_7e4a0")
@@ -247,15 +249,6 @@ CD = SubResource("PackedScene_105op")
 
 [node name="EndUI" parent="." unique_id=16656824 instance=ExtResource("11_nvhh3")]
 
-[node name="Ocean" type="ColorRect" parent="EndUI" unique_id=1737348571]
-material = SubResource("ShaderMaterial_1x38d")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
 [node name="MonsterPool" type="Node2D" parent="." unique_id=1479358291]
 script = ExtResource("13_1x38d")
 monster_scene = ExtResource("14_mea6k")
@@ -266,3 +259,18 @@ script = ExtResource("14_fxjfw")
 monster_pool = NodePath("../MonsterPool")
 map_manager = NodePath("..")
 metadata/_custom_type_script = "uid://3fqndhasy1mx"
+
+[node name="DebugMenu" parent="." unique_id=220269481 instance=ExtResource("16_djb5y")]
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=1591102971]
+layer = -1
+
+[node name="Ocean" type="ColorRect" parent="Background" unique_id=1737348571]
+material = SubResource("ShaderMaterial_1x38d")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_erlml")
