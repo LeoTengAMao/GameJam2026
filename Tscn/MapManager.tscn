@@ -225,7 +225,7 @@ tile_set = SubResource("TileSet_7e4a0")
 [node name="SelectionLayer" type="TileMapLayer" parent="." unique_id=2087420023]
 tile_set = SubResource("TileSet_ba2e8")
 
-[node name="CanvasLayer" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]
+[node name="UI" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]
 
 [node name="RockPool" parent="." unique_id=959581959 instance=ExtResource("5_x7wua")]
 
@@ -239,6 +239,8 @@ area_scene = ExtResource("8_nvhh3")
 [node name="SkillManager" type="Node2D" parent="." unique_id=612887923]
 script = ExtResource("9_105op")
 CD = SubResource("PackedScene_105op")
+
+[node name="PassiveBuildTimer" type="Timer" parent="SkillManager" unique_id=1521757172]
 
 [node name="EndUI" parent="." unique_id=16656824 instance=ExtResource("11_nvhh3")]
 

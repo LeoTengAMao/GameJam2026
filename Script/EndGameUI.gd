@@ -38,7 +38,7 @@ func _play_popup_animation() -> void:
 	
 	# 讓背景變暗、面板從小變大的彈出動畫
 	color_rect.modulate.a = 0
-	$CenterContainer.scale = Vector2(0.5, 0.5)
+	# $CenterContainer.scale = Vector2(0.5, 0.5)
 	
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(color_rect, "modulate:a", 1.0, 0.5)

@@ -210,27 +210,34 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 
 # 當侵蝕計時器時間到時觸發
 func _on_erosion_timer_timeout():
-	# 1. 找出一份所有海岸線格子的清單
-	var coasts_to_damage = []
-	for pos in grid_data.keys():
-		if grid_data[pos].type == CellType.COAST:
-			coasts_to_damage.append(pos)
-			
-	if coasts_to_damage.is_empty():
-		return
-		
-	# 2.計算當前動態傷害：基礎傷害 + (秒數 * 成長率)
-	# 使用 floori 將浮點數轉換為整數傷害
 	var current_damage = floori(base_erosion_damage + (elapsed_time * damage_growth_per_second))
 	
-	# 算一下目前是遊戲的第幾分鐘，方便看 Log
+	# 用來追蹤火山是否碰到海
+	var volcano_touching_sea = false
+	var volcano_core_pos = Vector2i(0, 0) # 火山核心位置
+	
+	# 1. 遍歷地圖，找出誰該受傷
+	for pos in grid_data.keys():
+		var cell = grid_data[pos]
+		
+		# A. 海岸線一律受傷
+		if cell.type == CellType.COAST:
+			damage_land(pos, current_damage)
+		
+		# B. 火山檢查：只要火山的「任一塊格子」碰到海，整座火山就判定為「接觸海」
+		elif cell.type == CellType.VOLCANO:
+			if _is_adjacent_to_sea(pos):
+				volcano_touching_sea = true
+	
+	# 2. 如果火山接觸到海，對核心扣血一次
+	if volcano_touching_sea:
+		damage_land(volcano_core_pos, current_damage*4)
+		print("🌋 火山接觸到海水！受到侵蝕傷害: ", current_damage)
+		
+	# 遊戲時間顯示
 	var minutes = floori(elapsed_time / 60.0)
 	var seconds = floori(int(elapsed_time) % 60)
-	print(" 遊戲時間 [%02d:%02d] |  海洋暴走度！當前侵蝕傷害: %d" % [minutes, seconds, current_damage])
-	
-	# 3. 對每一塊海岸造成動態傷害
-	for pos in coasts_to_damage:
-		damage_land(pos, current_damage)
+	print(" 遊戲時間 [%02d:%02d] | 侵蝕循環完成" % [minutes, seconds])
 # 遍歷所有土地，重新計算誰靠海
 func update_all_coasts():
 	for pos in grid_data.keys():
@@ -300,6 +307,7 @@ func _destroy_volcano():
 		tilemap.set_cell(pos, -1, Vector2i(-1, -1)) # 清除圖塊
 		
 	# 重新計算海岸線
+	EventManager.game_over.emit()
 	update_all_coasts()
 	
 # 土地被摧毀的處理
