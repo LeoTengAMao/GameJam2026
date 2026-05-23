@@ -80,7 +80,13 @@ func _process(delta: float) -> void:
 		EventManager.on_cell_hovered.emit(false, "", 0, 0)
 
 func _ready():
-	
+	# -------- TEST ---------
+	var monster_scene = preload("res://tscn/Monster.tscn")
+	var monster = monster_scene.instantiate()
+
+	add_child(monster)
+	monster.initialize(Monster.MonsterType.STARFISH, Vector2(0, 0), 100, 1, 1)
+	# -------- TEST ---------
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
 	for x in range(-1, 3):

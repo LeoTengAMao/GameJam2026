@@ -24,14 +24,6 @@ func _ready() -> void:
 	EventManager.stone_count_changed.connect(_on_stone_count_changed)
 	EventManager.volcano_upgraded.connect(_on_volcano_upgraded)
 	
-	# -------- TEST ---------
-	var monster_scene = preload("res://tscn/Monster.tscn")
-	var monster = monster_scene.instantiate()
-
-	add_child(monster)
-	monster.initialize(Monster.MonsterType.STARFISH, Vector2(0, 0), 100, 1, 1)
-	# -------- TEST ---------
-	
 	# 按鈕連線
 	upgrade_button.pressed.connect(func(): EventManager.upgrade_requested.emit("volcano"))
 	
