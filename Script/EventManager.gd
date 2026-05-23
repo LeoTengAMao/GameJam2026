@@ -39,3 +39,7 @@ signal close_ui_requested
 var is_heart_surrounded: bool = false
 signal game_won
 signal game_over
+
+# 在 EventManager.gd 中
+var is_gentle_mode: bool = true
+signal settings_changed() # 當玩家切換模式時廣播

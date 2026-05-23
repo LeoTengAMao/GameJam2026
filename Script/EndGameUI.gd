@@ -38,7 +38,7 @@ func _play_popup_animation() -> void:
 	
 	# 讓背景變暗、面板從小變大的彈出動畫
 	color_rect.modulate.a = 0
-	# $CenterContainer.scale = Vector2(0.5, 0.5)
+	$CenterContainer.scale = Vector2(1.5 ,1.5)
 	
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(color_rect, "modulate:a", 1.0, 0.5)
@@ -58,4 +58,4 @@ func _on_restart_pressed() -> void:
 	EventManager.simple_map_data.clear()
 	
 	# 3. 重新載入當前場景 (等同於 F5 刷新)
-	get_tree().reload_current_scene()
+	get_tree().change_scene_to_file("res://Tscn/menu.tscn")

@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
 [ext_resource type="PackedScene" uid="uid://jrq8ojai3yye" path="res://Tscn/EndGameUI.tscn" id="11_nvhh3"]
 [ext_resource type="Shader" uid="uid://wsbnr5jpmsdh" path="res://Assests/Shader/Ocean.gdshader" id="12_bfyrq"]
+[ext_resource type="Script" uid="uid://b5sumgxy2pibl" path="res://Script/BackgroundController.gd" id="13_1x38d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
 texture = ExtResource("2_7e4a0")
@@ -200,14 +201,14 @@ frequency = 0.0486
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1x38d"]
 noise = SubResource("FastNoiseLite_bfyrq")
 seamless = true
-seamless_blend_skirt = 0.05
+seamless_blend_skirt = 0.01
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1x38d"]
 shader = ExtResource("12_bfyrq")
 shader_parameter/noise_tex = SubResource("NoiseTexture2D_1x38d")
-shader_parameter/deep_water = Color(0.08, 0.35, 0.6, 1)
-shader_parameter/shallow_water = Color(0.15, 0.6, 0.8, 1)
-shader_parameter/foam_color = Color(0.9, 0.95, 1, 1)
+shader_parameter/deep_water = Color(0.078431375, 0.34901962, 0.6, 1)
+shader_parameter/shallow_water = Color(0.14901961, 0.5137255, 0.8, 1)
+shader_parameter/foam_color = Color(0.64705884, 0.9490196, 1, 1)
 shader_parameter/wave_speed = 0.05
 shader_parameter/wave_scale = 1.5
 
@@ -255,3 +256,4 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("13_1x38d")
