@@ -5,7 +5,6 @@ extends CanvasLayer
 # ==========================================
 # [靜態介面 (HUD)]
 @onready var stone_label: Label = $HUD/PanelContainer/VBoxContainer/StoneLabel
-@onready var volcano_level_label: Label = $HUD/PanelContainer/VBoxContainer/VolcanoLevelLabel
 
 # [動態提示 (Tooltip)]
 @onready var tooltip: Control = $Tooltip
@@ -46,13 +45,11 @@ func _ready() -> void:
 	# 綁定全域廣播訊號
 	EventManager.on_cell_hovered.connect(_on_hover)
 	EventManager.stone_count_changed.connect(_on_stone_count_changed)
-	EventManager.volcano_upgraded.connect(_on_volcano_upgraded)
 	EventManager.on_cell_selected.connect(_on_cell_selected)
 	EventManager.close_ui_requested.connect(close_panel)
 
 	# 初始狀態隱藏
 	tooltip.hide()
-	volcano_level_label.text = "火山等級: 1"
 	
 	# 🔧 利用邊距把面板完美藏到螢幕右邊外面
 	side_panel.offset_left = 0
@@ -73,8 +70,8 @@ func _on_stone_count_changed(new_amount: int):
 		if btn.has_meta("cost"):
 			btn.disabled = new_amount < btn.get_meta("cost")
 
-func _on_volcano_upgraded(level: int, _cur_hp: int, _max_hp: int):
-	volcano_level_label.text = "火山等級: %d" % level
+
+	
 
 func _on_hover(is_hovering: bool, type_name: String, current_hp: int, max_hp: int) -> void:
 	is_showing_tooltip = is_hovering
