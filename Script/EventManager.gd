@@ -35,3 +35,6 @@ signal command_destroy_land(pos: Vector2i)
 signal on_cell_selected(data: Dictionary)
 
 signal close_ui_requested
+
+var is_heart_surrounded: bool = false
+signal game_won

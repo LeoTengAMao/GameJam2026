@@ -32,7 +32,8 @@ const VOLCANO_UPGRADES = [
 	{"id": "heal_all", "name": "大地治癒 (全體回血)", "base_cost": 100},
 	{"id": "random_land", "name": "板塊構造 (隨機造陸)", "base_cost": 150},
 	{"id": "defense_up", "name": "堅固岩層 (全體血量+)", "base_cost": 200},
-	{"id": "prod_speed", "name": "加速產石 (等級提升)", "base_cost": 50}
+	{"id": "prod_speed", "name": "加速產石 (等級提升)", "base_cost": 50},
+	{"id": "volcano_eruption", "name": "🌋 火山大爆炸 (贏得遊戲)", "base_cost": 1000}
 ]
 
 # ==========================================

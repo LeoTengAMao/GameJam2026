@@ -27,6 +27,21 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 				
 		elif upgrade_id == "prod_speed" and ResourceManager.spend_stones(50):
 			volcano_core.level += 1 
+		
+		if upgrade_id == "volcano_eruption":
+			# 1. 檢查前置條件：海洋之心是否被包圍？
+			if not EventManager.is_heart_surrounded:
+				print("❌ 條件未滿足：必須用土地將海洋之心 (3x3) 完全包圍，才能發動大爆炸！")
+				# 這裡未來可以做一個畫面震動或紅色錯誤音效提示玩家
+				return
+				
+			# 2. 檢查資源並扣除 (假設要 1000 顆石頭)
+			var cost = 1000
+			if ResourceManager.spend_stones(cost):
+				print("🌋💥 轟隆隆隆！火山大爆炸發動！！！海洋之心被徹底摧毀！！！玩家獲勝！")
+				
+				# 發送勝利廣播給其他 UI 接收
+				EventManager.game_won.emit()
 			
 			# 🌟 火山核心資料庫升級完後，立刻廣播！(把新等級、新血量傳出去)
 			EventManager.volcano_upgraded.emit(volcano_core.level, volcano_core.current_hp, volcano_core.max_hp)
