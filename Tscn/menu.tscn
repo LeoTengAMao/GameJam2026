@@ -77,7 +77,13 @@ size_flags_vertical = 3
 theme_override_font_sizes/font_size = 40
 text = "Start"
 
-[node name="Staff" type="Button" parent="Panel/Panel/Panel" unique_id=1058335155]
+[node name="Setting" type="Button" parent="Panel/Panel/Panel" unique_id=1058335155]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 40
+text = "Setting"
+
+[node name="Staff" type="Button" parent="Panel/Panel/Panel" unique_id=1159534149]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 40
@@ -101,5 +107,6 @@ offset_bottom = 40.0
 script = ExtResource("2_5vq8g")
 
 [connection signal="pressed" from="Panel/Panel/Panel/Start" to="Control" method="_on_start_button_pressed"]
+[connection signal="pressed" from="Panel/Panel/Panel/Setting" to="Control" method="_on_setting_button_pressed"]
 [connection signal="pressed" from="Panel/Panel/Panel/Staff" to="Control" method="_on_staff_button_pressed"]
 [connection signal="pressed" from="Panel/Panel/Panel/Exit" to="Control" method="_on_exit_button_pressed"]
