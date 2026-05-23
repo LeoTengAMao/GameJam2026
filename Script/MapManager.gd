@@ -1,118 +1,75 @@
 extends Node2D
 class_name MapManager
 
-# 定義地塊狀態
-enum CellType { SEA, LAND, COAST, VOLCANO ,OCEAN_HEART}
+enum CellType { SEA, LAND, COAST, VOLCANO, OCEAN_HEART }
+const TILE_SOURCE_ID = 2 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
 
 var ocean_heart_rect: Rect2i
-
-# 內部類別：每塊土地的專屬資料表
 class CellData:
 	var type: CellType
 	var current_hp: int
 	var max_hp: int
 	var level: int
 	var area: GenerateArea
-	
-	#  新增：用來連結共用資料的參照 (Reference)
 	var core_data: CellData = null
-
 	func _init(_type: CellType, _max_hp: int):
 		self.type = _type
 		self.max_hp = _max_hp
 		self.current_hp = _max_hp
 		self.level = 1
 
-# 邏輯層：儲存全地圖資料
-# Key: Vector2i (網格座標), Value: CellData
 var grid_data: Dictionary = {}
-
-# 定義相鄰的四個方向 (上下左右)
 const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
-# 視覺層：Godot 4.3 推薦使用 TileMapLayer
 @onready var tilemap: TileMapLayer = $TileMapLayer
-# 🌟 新增：抓住選取框層
 @onready var selection_tilemap: TileMapLayer = $SelectionLayer
 
-#
 var last_hovered_pos: Vector2i = Vector2i(-10000, -10000)
-
-# 🌟 補上這行：記錄玩家現在「點選」了哪一個網格 (給升級系統用的)
 var current_selected_pos: Vector2i = Vector2i(-10000, -10000)
 
-# === 動態侵蝕系統參數 ===
 var erosion_timer: Timer
-var erosion_interval: float = 5.0   # 每 3 秒侵蝕一次不变
-
-var base_erosion_damage: float = 5 # 一開始的基礎傷害（比原本的 10 更溫和）
-var damage_growth_per_second: float = 0.1 # 每秒鐘傷害增加 0.1（也就是每過一分鐘傷害增加 6 點）
-
-var elapsed_time: float = 0.0       # 記錄遊戲過去了多少秒
+var erosion_interval: float = 5.0
+var base_erosion_damage: float = 5
+var damage_growth_per_second: float = 0.1
+var elapsed_time: float = 0.0
 
 func _process(delta: float) -> void:
 	elapsed_time += delta
-	
-	# 1. 取得當前滑鼠的世界座標與網格座標
 	var mouse_global_pos = get_global_mouse_position()
 	var grid_pos = tilemap.local_to_map(mouse_global_pos)
 	
-	# === 🌟 核心修改：黃色邊框提示系統 (陸地與海洋通用) 🌟 ===
-	
-	# 只有當滑鼠移到「新的格子」時才更新，避免每一幀都重複重畫，節省效能
 	if grid_pos != last_hovered_pos:
-		# A. 清除舊的邊框
 		selection_tilemap.clear()
-		
-		# B. 在新的網格位置畫上黃色邊框
-		# 參數：(網格座標, 圖片集ID, Atlas座標(1,1)是黃色邊框)
-		# 註：不論該格有沒有土地(grid_data.has)，都會畫出邊框
 		selection_tilemap.set_cell(grid_pos, 0, Vector2i(0, 0)) 
-		
-		# C. 更新記錄點
 		last_hovered_pos = grid_pos
 	
-	
-	# === [原本的 UI 血量廣播邏輯，保持原樣] ===
 	if grid_data.has(grid_pos):
-		# ... [原本發射 true 訊號的邏輯] ...
 		var data = grid_data[grid_pos]
 		var target_data = data
 		if data.core_data != null: target_data = data.core_data
 		var type_name = CellType.keys()[data.type]
 		EventManager.on_cell_hovered.emit(true, type_name, target_data.current_hp, target_data.max_hp)
 	else:
-		# 發射 false 訊號告知滑鼠在海洋上
 		EventManager.on_cell_hovered.emit(false, "", 0, 0)
-
 func _ready():
-	
 	EventManager.upgrade_requested.connect(_on_upgrade_requested)
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
-	# === 🌟 1. 上帝視角：直接生成初始地形 (免扣錢、免檢查) ===
 	for x in range(-1, 3):
 		for y in range(-1, 3):
 			var pos = Vector2i(x, y) 
-			
 			if x >= 0 and x <= 1 and y >= 0 and y <= 1:
-				# 放核心火山區
 				var grid_cell = CellData.new(CellType.VOLCANO, 0)
 				grid_cell.core_data = volcano_core
 				grid_data[pos] = grid_cell
 			else:
-				# 🌟 直接寫入字典，不要呼叫 build_land！
-				# 這樣就不會被接壤規則卡住，也不會扣玩家的石頭
 				grid_data[pos] = CellData.new(CellType.LAND, 100)
 				EventManager.simple_map_data[pos] = "LAND"
-				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
+				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(64, 64))
 	
-	# === 🌟 生成海洋之心 (3x3 空間) ===
-	# 假設生成在網格 X=15, Y=-1 的位置 (你可以依據地圖大小自行調整 x 的值)
 	var heart_pos = Vector2i(35, -1) 
 	ocean_heart_rect = Rect2i(heart_pos.x, heart_pos.y, 3, 3)
-	
-	var ocean_heart_core = CellData.new(CellType.OCEAN_HEART, 99999) # 血量給極高
+	var ocean_heart_core = CellData.new(CellType.OCEAN_HEART, 99999)
 	for x in range(ocean_heart_rect.position.x, ocean_heart_rect.end.x):
 		for y in range(ocean_heart_rect.position.y, ocean_heart_rect.end.y):
 			var pos = Vector2i(x, y)
@@ -121,27 +78,16 @@ func _ready():
 			grid_data[pos] = grid_cell
 			EventManager.simple_map_data[pos] = "OCEAN_HEART"
 		
-	# === 🌟 2. 全部放好後，一口氣更新海岸線與圖片 ===
 	update_all_coasts()
-	print("4x4 初始地圖與火山生成完畢！")	
-	
 	selection_tilemap.clear()
 	
-	
-	# === 啟動侵蝕計時器 ===
 	erosion_timer = Timer.new()
 	erosion_timer.wait_time = erosion_interval
 	erosion_timer.autostart = true
-	
-	# 將計時器的 timeout 訊號連接到我們等一下要寫的函式
 	erosion_timer.timeout.connect(_on_erosion_timer_timeout)
+	add_child(erosion_timer)
 	
-	add_child(erosion_timer) # 把計時器加入場景樹中
-	print("🌊 海洋侵蝕機制已啟動！")
-	
-	# 🔌 監聽外部傳來的「破壞指令」，並綁定到 MapManager 自己的函式
 	EventManager.command_damage_land.connect(damage_land)
-	# 如果你有寫 _destroy_land，也可以這樣接：
 	EventManager.command_destroy_land.connect(_destroy_land)
 
 var land_build_cost: int = 5 # MapManager 只需記錄「造陸的標價」
@@ -233,24 +179,31 @@ func _on_erosion_timer_timeout():
 	print(" 遊戲時間 [%02d:%02d] | 侵蝕循環完成" % [minutes, seconds])
 # 遍歷所有土地，重新計算誰靠海
 func update_all_coasts():
+	var new_types: Dictionary = {}
 	for pos in grid_data.keys():
-		var data: CellData = grid_data[pos]
-		
-		if data.type == CellType.VOLCANO:
-			_set_visual_tile(pos, CellType.VOLCANO)
-		if data.type == CellType.OCEAN_HEART:
-			_set_visual_tile(pos, CellType.OCEAN_HEART)
-		# 只有陸地或海岸需要被重新判定
+		var data = grid_data[pos]
 		if data.type == CellType.LAND or data.type == CellType.COAST:
-			if _is_adjacent_to_sea(pos):
-				data.type = CellType.COAST
-				EventManager.simple_map_data[pos] = "COAST"
-				_set_visual_tile(pos, CellType.COAST)
-			else:
-				data.type = CellType.LAND
-				EventManager.simple_map_data[pos] = "LAND"
-				_set_visual_tile(pos, CellType.LAND)
+			new_types[pos] = CellType.LAND
 
+	for pos in new_types.keys():
+		for dir in NEIGHBORS:
+			var neighbor = pos + dir
+			if not new_types.has(neighbor) and not _is_solid_non_land(neighbor):
+				new_types[pos] = CellType.COAST
+				break
+
+	for pos in new_types.keys():
+		grid_data[pos].type = new_types[pos]
+		EventManager.simple_map_data[pos] = CellType.keys()[new_types[pos]]
+
+	# 最後統一呼叫視覺更新
+	for pos in grid_data.keys():
+		_set_visual_tile(pos, grid_data[pos].type)
+
+func _is_solid_non_land(pos: Vector2i) -> bool:
+	if not grid_data.has(pos): return false
+	var t = grid_data[pos].type
+	return t == CellType.VOLCANO or t == CellType.OCEAN_HEART
 # 檢查某座標的上下左右是否有海洋 (或者沒有資料＝海洋)
 func _is_adjacent_to_sea(pos: Vector2i) -> bool:
 	for dir in NEIGHBORS:
@@ -323,19 +276,32 @@ func _destroy_land(pos: Vector2i):
 	update_all_coasts()
 	EventManager.on_destory_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 
+func _get_land_mask(pos: Vector2i) -> int:
+	var mask = 0
+	if _is_solid(pos + Vector2i.UP): mask += 1
+	if _is_solid(pos + Vector2i.RIGHT): mask += 2
+	if _is_solid(pos + Vector2i.DOWN): mask += 4
+	if _is_solid(pos + Vector2i.LEFT): mask += 8
+	return mask
+
+func _is_solid(pos: Vector2i) -> bool:
+	if not grid_data.has(pos): return false
+	var t = grid_data[pos].type
+	return t == CellType.LAND or t == CellType.COAST or t == CellType.VOLCANO or t == CellType.OCEAN_HEART
 
 func _set_visual_tile(pos: Vector2i, type: CellType):
 	match type:
+		CellType.SEA:
+			tilemap.set_cell(pos, -1, Vector2i(-1, -1))
 		CellType.VOLCANO:
-			tilemap.set_cell(pos, 1, Vector2i(0, 1))# 火山
-		CellType.LAND:
-			tilemap.set_cell(pos, 1, Vector2i(0, 0)) # 綠色陸地
-		CellType.COAST:
-			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸\
+			tilemap.set_cell(pos, TILE_SOURCE_ID, Vector2i(0, 1)) # 火山位置
 		CellType.OCEAN_HEART:
-			# 🌟 給海洋之心一個專屬的圖塊 (假設在圖集裡的座標是 0, 2)
-			tilemap.set_cell(pos, 1, Vector2i(1, 1))
-		
+			tilemap.set_cell(pos, TILE_SOURCE_ID, Vector2i(1, 1)) # 心位置
+		CellType.LAND, CellType.COAST:
+			# 自動拼接邏輯：計算相鄰陸地並設定 Tile
+			var mask = _get_land_mask(pos)
+			var atlas_coord = Vector2i(mask % 4, mask / 4)
+			tilemap.set_cell(pos, TILE_SOURCE_ID, atlas_coord)
 
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed:
