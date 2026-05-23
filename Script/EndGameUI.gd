@@ -38,7 +38,7 @@ func _play_popup_animation() -> void:
 	
 	# 讓背景變暗、面板從小變大的彈出動畫
 	color_rect.modulate.a = 0
-	$CenterContainer.scale = Vector2(1.5 ,1.5)
+	$CenterContainer.scale = Vector2(1.0 ,1.0)
 	
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(color_rect, "modulate:a", 1.0, 0.5)
@@ -49,8 +49,9 @@ func _play_popup_animation() -> void:
 
 # 🔄 重新開始遊戲
 func _on_restart_pressed() -> void:
-	# 1. 解除暫停狀態
-	get_tree().paused = false
+	print("按鈕被按到了！") # 看看 Output 視窗有沒有出現這行字
+	_cleanup_game_state()
+	get_tree().change_scene_to_file("res://Game.tscn")
 	
 	# 2. 非常重要：清空 EventManager 裡的全域變數與資料！
 	# 否則重新開始後，系統會以為海洋之心還是被包圍的，或是地圖資料殘留
@@ -59,3 +60,11 @@ func _on_restart_pressed() -> void:
 	
 	# 3. 重新載入當前場景 (等同於 F5 刷新)
 	get_tree().change_scene_to_file("res://Tscn/menu.tscn")
+	
+func _cleanup_game_state() -> void:
+	get_tree().paused = false
+	EventManager.is_heart_surrounded = false
+	EventManager.simple_map_data.clear()
+	# 如果你有使用 ResourceManager，確保這裡能存取到它
+	if has_node("/root/ResourceManager"):
+		ResourceManager.current_stones = 100
