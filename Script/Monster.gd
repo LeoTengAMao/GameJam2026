@@ -511,9 +511,16 @@ func _attack_starfish():
 class Bullet extends Node2D:
 	var target_pos: Vector2
 	var damage: int
-	var speed: float = 300.0
+	var speed: float = 400.0
 	var owner_monster: Monster = null
 	var owner_generation: int = -1
+
+	var trail: Array[Vector2] = []
+	const TRAIL_LENGTH = 10
+
+	# 隨機裝飾粒子（初始化時固定，不每幀重算）
+	var ink_particles: Array[Dictionary] = []
+	const PARTICLE_COUNT = 6
 
 	func initialize(from: Vector2, to: Vector2, dmg: int, owner: Monster):
 		global_position = from
@@ -521,6 +528,25 @@ class Bullet extends Node2D:
 		damage = dmg
 		owner_monster = owner
 		owner_generation = owner.generation
+		_init_particles()
+
+	func _init_particles():
+		ink_particles.clear()
+		var rng = RandomNumberGenerator.new()
+		rng.randomize()
+		for i in PARTICLE_COUNT:
+			ink_particles.append({
+				# 圍繞核心的隨機偏移
+				"offset": Vector2(rng.randf_range(-12.0, 12.0), rng.randf_range(-12.0, 12.0)),
+				"radius": rng.randf_range(1.5, 4.0),
+				# 低明度隨機顏色：深紫、深藍、深綠、深紅
+				"color": Color(
+					rng.randf_range(0.0, 0.25),
+					rng.randf_range(0.0, 0.2),
+					rng.randf_range(0.0, 0.3),
+					rng.randf_range(0.4, 0.8)
+				)
+			})
 
 	func _is_owner_alive() -> bool:
 		if not is_instance_valid(owner_monster):
@@ -533,15 +559,60 @@ class Bullet extends Node2D:
 		if not _is_owner_alive():
 			queue_free()
 			return
+
+		trail.push_back(Vector2.ZERO)
+		if trail.size() > TRAIL_LENGTH:
+			trail.pop_front()
+
 		var direction = target_pos - global_position
 		if direction.length() <= speed * delta:
 			global_position = target_pos
 			_on_hit()
 		else:
-			global_position += direction.normalized() * speed * delta
+			var move = direction.normalized() * speed * delta
+			global_position += move
+			for i in trail.size():
+				trail[i] -= move
+
+		queue_redraw()
 
 	func _draw():
-		draw_circle(Vector2.ZERO, 6, Color.BLACK)
+		var dir = (target_pos - global_position).normalized()
+		if dir == Vector2.ZERO:
+			dir = Vector2(1, 0)
+
+		# 墨汁拖尾：黑色為主，越舊越細越透明
+		for i in trail.size():
+			var t = float(i) / float(TRAIL_LENGTH)
+			var radius = lerp(15.0, 5.0, t)
+			var alpha = lerp(0.0, 0.7, t)
+			draw_circle(trail[i], radius, Color(0.05, 0.05, 0.08, alpha))
+
+		# 拖尾側邊墨點（不規則感）
+		for i in range(0, trail.size(), 2):
+			var t = float(i) / float(TRAIL_LENGTH)
+			var splat_offset = Vector2(trail[i].y, -trail[i].x).normalized() * randf_range(2.0, 5.0)
+			draw_circle(trail[i] + splat_offset, lerp(0.3, 2.0, t), Color(0.08, 0.04, 0.1, t * 0.4))
+			draw_circle(trail[i] - splat_offset, lerp(0.3, 1.5, t), Color(0.05, 0.02, 0.08, t * 0.3))
+
+		# 低明度裝飾粒子（固定偏移，隨子彈旋轉）
+		for p in ink_particles:
+			draw_circle(p["offset"], p["radius"], p["color"])
+
+		# 墨汁暈染外層
+		draw_circle(Vector2.ZERO, 11.0, Color(0.06, 0.02, 0.1, 0.35))
+
+		# 墨汁中層
+		draw_circle(Vector2.ZERO, 7.0, Color(0.04, 0.04, 0.06, 0.85))
+
+		# 核心
+		draw_circle(Vector2.ZERO, 4.0, Color(0.08, 0.02, 0.12, 1.0))
+
+		# 方向性墨汁尾跡（粗）
+		var tail_end = -dir * 16.0
+		draw_line(Vector2.ZERO, tail_end, Color(0.05, 0.02, 0.08, 0.5), 4.0, true)
+		# 細高亮線（讓尾跡有層次）
+		draw_line(Vector2.ZERO, tail_end * 0.5, Color(0.15, 0.08, 0.2, 0.6), 1.5, true)
 
 	func _on_hit():
 		if not _is_owner_alive():
