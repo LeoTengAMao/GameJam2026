@@ -12,11 +12,13 @@ class CellData:
 	var level: int
 	var area: GenerateArea
 	var core_data: CellData = null
-	func _init(_type: CellType, _max_hp: int):
+	var origin_pos: Vector2i = Vector2i.ZERO 
+	func _init(_type: CellType, _max_hp: int, _origin: Vector2i = Vector2i.ZERO):
 		self.type = _type
 		self.max_hp = _max_hp
 		self.current_hp = _max_hp
 		self.level = 1
+		self.origin_pos = _origin 
 
 var grid_data: Dictionary = {}
 const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
@@ -58,22 +60,24 @@ func _ready():
 	for x in range(-1, 3):
 		for y in range(-1, 3):
 			var pos = Vector2i(x, y) 
+			# 如果在 0~1 的範圍內，就是火山
 			if x >= 0 and x <= 1 and y >= 0 and y <= 1:
-				var grid_cell = CellData.new(CellType.VOLCANO, 0)
+				var grid_cell = CellData.new(CellType.VOLCANO, 0, Vector2i(0, 0))
 				grid_cell.core_data = volcano_core
 				grid_data[pos] = grid_cell
 			else:
+				# 否則就是陸地
 				grid_data[pos] = CellData.new(CellType.LAND, 100)
 				EventManager.simple_map_data[pos] = "LAND"
-				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(64, 64))
+				# 注意：這裡呼叫 update_all_coasts() 會統一繪製，不用在這裡重複 emit 視覺訊號
 	
-	var heart_pos = Vector2i(35, -1) 
-	ocean_heart_rect = Rect2i(heart_pos.x, heart_pos.y, 3, 3)
+	# ... 後續的海洋之心與侵蝕邏輯保持不變 ...
+	var heart_pos = Vector2i(35, -1)
 	var ocean_heart_core = CellData.new(CellType.OCEAN_HEART, 99999)
-	for x in range(ocean_heart_rect.position.x, ocean_heart_rect.end.x):
-		for y in range(ocean_heart_rect.position.y, ocean_heart_rect.end.y):
+	for x in range(heart_pos.x, heart_pos.x + 3):
+		for y in range(heart_pos.y, heart_pos.y + 3):
 			var pos = Vector2i(x, y)
-			var grid_cell = CellData.new(CellType.OCEAN_HEART, 0)
+			var grid_cell = CellData.new(CellType.OCEAN_HEART, 0, heart_pos)
 			grid_cell.core_data = ocean_heart_core
 			grid_data[pos] = grid_cell
 			EventManager.simple_map_data[pos] = "OCEAN_HEART"
@@ -290,19 +294,29 @@ func _is_solid(pos: Vector2i) -> bool:
 	return t == CellType.LAND or t == CellType.COAST or t == CellType.VOLCANO or t == CellType.OCEAN_HEART
 
 func _set_visual_tile(pos: Vector2i, type: CellType):
+	if type == CellType.SEA:
+		tilemap.set_cell(pos, -1, Vector2i(-1, -1))
+		return
+		
+	var data = grid_data[pos]
+	var offset = pos - data.origin_pos # 算出相對位置 (0,0), (1,0), (0,1)...
+	
 	match type:
-		CellType.SEA:
-			tilemap.set_cell(pos, -1, Vector2i(-1, -1))
 		CellType.VOLCANO:
-			tilemap.set_cell(pos, TILE_SOURCE_ID, Vector2i(0, 1)) # 火山位置
+			# 假設火山圖塊從 Atlas (0, 2) 開始，往右往下排
+			var base_atlas = Vector2i(0, 0) 
+			tilemap.set_cell(pos, 3, base_atlas + offset)
+			
 		CellType.OCEAN_HEART:
-			tilemap.set_cell(pos, TILE_SOURCE_ID, Vector2i(1, 1)) # 心位置
+			# 假設海洋之心圖塊從 Atlas (0, 4) 開始，往右往下排
+			var base_atlas = Vector2i(0, 0)
+			tilemap.set_cell(pos, 4, base_atlas + offset)
+			
 		CellType.LAND, CellType.COAST:
-			# 自動拼接邏輯：計算相鄰陸地並設定 Tile
+			# 原本的 Bitmask 邏輯保持不變
 			var mask = _get_land_mask(pos)
 			var atlas_coord = Vector2i(mask % 4, mask / 4)
 			tilemap.set_cell(pos, TILE_SOURCE_ID, atlas_coord)
-
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		var grid_pos = tilemap.local_to_map(get_global_mouse_position())
