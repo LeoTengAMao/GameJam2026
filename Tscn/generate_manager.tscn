@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ktm38l2gt1kr"]
 
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="1_h0mux"]
-[ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="2_h0mux"]
-[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="3_n4k7n"]
+[ext_resource type="PackedScene" path="res://Tscn/timer.tscn" id="2_h0mux"]
+[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="3_n4k7n"]
 
 [node name="GenerateManager" type="Node2D" unique_id=845240230]
 

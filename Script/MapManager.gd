@@ -2,7 +2,9 @@ extends Node2D
 class_name MapManager
 
 # 定義地塊狀態
-enum CellType { SEA, LAND, COAST, VOLCANO }
+enum CellType { SEA, LAND, COAST, VOLCANO ,OCEAN_HEART}
+
+var ocean_heart_rect: Rect2i
 
 # 內部類別：每塊土地的專屬資料表
 class CellData:
@@ -110,13 +112,27 @@ func _ready():
 				grid_data[pos] = CellData.new(CellType.LAND, 100)
 				EventManager.simple_map_data[pos] = "LAND"
 				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
+	
+	# === 🌟 生成海洋之心 (3x3 空間) ===
+	# 假設生成在網格 X=15, Y=-1 的位置 (你可以依據地圖大小自行調整 x 的值)
+	var heart_pos = Vector2i(35, -1) 
+	ocean_heart_rect = Rect2i(heart_pos.x, heart_pos.y, 3, 3)
+	
+	var ocean_heart_core = CellData.new(CellType.OCEAN_HEART, 99999) # 血量給極高
+	for x in range(ocean_heart_rect.position.x, ocean_heart_rect.end.x):
+		for y in range(ocean_heart_rect.position.y, ocean_heart_rect.end.y):
+			var pos = Vector2i(x, y)
+			var grid_cell = CellData.new(CellType.OCEAN_HEART, 0)
+			grid_cell.core_data = ocean_heart_core
+			grid_data[pos] = grid_cell
+			EventManager.simple_map_data[pos] = "OCEAN_HEART"
 		
 	# === 🌟 2. 全部放好後，一口氣更新海岸線與圖片 ===
 	update_all_coasts()
 	print("4x4 初始地圖與火山生成完畢！")	
 	
 	selection_tilemap.clear()
-	# ... [你原本的 4x4 與火山生成邏輯] ...
+	
 	
 	# === 啟動侵蝕計時器 ===
 	erosion_timer = Timer.new()
@@ -185,8 +201,10 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 	# 4. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
 	EventManager.simple_map_data[pos] = "LAND"
-	update_all_coasts()
+	
 	EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
+	update_all_coasts()
+	check_ocean_heart_surrounded()
 	return true
 
 # 當侵蝕計時器時間到時觸發
@@ -219,6 +237,8 @@ func update_all_coasts():
 		
 		if data.type == CellType.VOLCANO:
 			_set_visual_tile(pos, CellType.VOLCANO)
+		if data.type == CellType.OCEAN_HEART:
+			_set_visual_tile(pos, CellType.OCEAN_HEART)
 		# 只有陸地或海岸需要被重新判定
 		if data.type == CellType.LAND or data.type == CellType.COAST:
 			if _is_adjacent_to_sea(pos):
@@ -300,7 +320,10 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 		CellType.LAND:
 			tilemap.set_cell(pos, 1, Vector2i(0, 0)) # 綠色陸地
 		CellType.COAST:
-			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸
+			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸\
+		CellType.OCEAN_HEART:
+			# 🌟 給海洋之心一個專屬的圖塊 (假設在圖集裡的座標是 0, 2)
+			tilemap.set_cell(pos, 1, Vector2i(1, 1))
 		
 
 func _unhandled_input(event):
@@ -346,6 +369,32 @@ func _is_adjacent_to_land(pos: Vector2i) -> bool:
 	for dir in NEIGHBORS:
 		var neighbor_pos = pos + dir
 		# 如果旁邊有資料，而且不是海洋，就代表有跟現有土地接壤
-		if grid_data.has(neighbor_pos) and grid_data[neighbor_pos].type != CellType.SEA:
+		if grid_data.has(neighbor_pos) and grid_data[neighbor_pos].type != CellType.SEA and grid_data[neighbor_pos].type != CellType.OCEAN_HEART:
 			return true
 	return false
+
+# 檢查海洋之心周圍的一圈 (共 16 格) 是否都是土地
+func check_ocean_heart_surrounded():
+	var surrounded = true
+	
+	# 掃描 3x3 外圍擴展 1 格的範圍 (也就是 5x5)
+	for x in range(ocean_heart_rect.position.x - 1, ocean_heart_rect.end.x + 1):
+		for y in range(ocean_heart_rect.position.y - 1, ocean_heart_rect.end.y + 1):
+			var pos = Vector2i(x, y)
+			
+			# 如果是海洋之心內部的 3x3 格子，跳過不檢查
+			if ocean_heart_rect.has_point(pos):
+				continue
+				
+			# 如果外圍有任何一格是「沒有資料(海洋)」或是「SEA狀態」，代表沒包好！
+			if not grid_data.has(pos) or grid_data[pos].type == CellType.SEA:
+				surrounded = false
+				break
+				
+	# 更新給全域知道，並在第一次包圍成功時印出提示
+	if surrounded and not EventManager.is_heart_surrounded:
+		print("✨ 神聖封印完成！海洋之心已被完全包圍！火山大爆炸解鎖！")
+	elif not surrounded and EventManager.is_heart_surrounded:
+		print("⚠️ 封印破裂！海洋之心的包圍網被破壞了！")
+		
+	EventManager.is_heart_surrounded = surrounded

@@ -7,7 +7,7 @@ class_name MapCamera
 
 # === 🧱 世界邊界參數 ===
 @export var min_grid: Vector2i = Vector2i(-20, -20)
-@export var max_grid: Vector2i = Vector2i(20, 20)
+@export var max_grid: Vector2i = Vector2i(40, 20)
 const TILE_SIZE: float = 128.0
 
 # === 🔍 縮放 (Zoom) 參數 ===
