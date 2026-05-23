@@ -93,7 +93,7 @@ func _ready():
 	var monster = monster_scene.instantiate()
 
 	add_child(monster)
-	monster.initialize(Monster.MonsterType.STARFISH, Vector2i(0, 0), 100, 1, 1)
+	monster.initialize(Monster.MonsterType.STARFISH, Vector2(-10, 5), 100, 10, 1, 5)
 	# -------- TEST ---------
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
