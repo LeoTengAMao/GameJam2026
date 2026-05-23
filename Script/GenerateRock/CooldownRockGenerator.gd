@@ -30,3 +30,6 @@ func _spawn_one_rock() -> void:
 	if spawn_global_pos != null and rock_pool != null:
 		# 如果 rock_pool 是 GDScript，直接呼叫方法即可
 		rock_pool.spawn_rock(spawn_global_pos)
+		
+func set_interval(time: float) -> void:
+	spawn_interval = time
