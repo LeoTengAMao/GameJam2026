@@ -32,8 +32,11 @@ const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 # 🌟 新增：抓住選取框層
 @onready var selection_tilemap: TileMapLayer = $SelectionLayer
 
-# 🌟 新增：記錄上一次滑鼠指著的網格，優化效能
+#
 var last_hovered_pos: Vector2i = Vector2i(-10000, -10000)
+
+# 🌟 補上這行：記錄玩家現在「點選」了哪一個網格 (給升級系統用的)
+var current_selected_pos: Vector2i = Vector2i(-10000, -10000)
 
 # === 動態侵蝕系統參數 ===
 var erosion_timer: Timer
@@ -81,24 +84,30 @@ func _process(delta: float) -> void:
 
 func _ready():
 	
+	EventManager.upgrade_requested.connect(_on_upgrade_requested)
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
+	# === 🌟 1. 上帝視角：直接生成初始地形 (免扣錢、免檢查) ===
 	for x in range(-1, 3):
 		for y in range(-1, 3):
-			var pos = Vector2i(x, y)
+			var pos = Vector2i(x, y) 
 			
-			# 判斷是否為正中間的 2x2 火山區：(0,0), (0,1), (1,0), (1,1)
 			if x >= 0 and x <= 1 and y >= 0 and y <= 1:
-				# 🌟 2. 創建這格專屬的資料，但把它的 core_data 指向我們剛剛建好的大腦
-				var grid_cell = CellData.new(CellType.VOLCANO, 0) # 這裡本身的血量設為 0 不重要
-				grid_cell.core_data = volcano_core # 建立連結！
+				# 放核心火山區
+				var grid_cell = CellData.new(CellType.VOLCANO, 0)
+				grid_cell.core_data = volcano_core
 				grid_data[pos] = grid_cell
 			else:
-				build_land(pos)
+				# 🌟 直接寫入字典，不要呼叫 build_land！
+				# 這樣就不會被接壤規則卡住，也不會扣玩家的石頭
+				grid_data[pos] = CellData.new(CellType.LAND, 100)
+				EventManager.simple_map_data[pos] = "LAND"
+				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 		
-		# 計算並更新海岸線狀態與視覺
+	# === 🌟 2. 全部放好後，一口氣更新海岸線與圖片 ===
 	update_all_coasts()
 	print("4x4 初始地圖與火山生成完畢！")	
+	
 	selection_tilemap.clear()
 	# ... [你原本的 4x4 與火山生成邏輯] ...
 	
@@ -112,32 +121,42 @@ func _ready():
 	
 	add_child(erosion_timer) # 把計時器加入場景樹中
 	print("🌊 海洋侵蝕機制已啟動！")
-	# 🔌 監聽升級請求
-	EventManager.upgrade_requested.connect(_on_upgrade_requested)
+	
 	# 🔌 監聽外部傳來的「破壞指令」，並綁定到 MapManager 自己的函式
 	EventManager.command_damage_land.connect(damage_land)
 	# 如果你有寫 _destroy_land，也可以這樣接：
 	EventManager.command_destroy_land.connect(_destroy_land)
-	
-func _on_upgrade_requested(type: String):
-	if type == "volcano":
-		var volcano_core = grid_data[Vector2i(0,0)].core_data
-		
-		# 計算升級費用 (例如：等級 * 50)
-		var cost = volcano_core.level * 50
-		
-		# 向銀行申請扣款
-		if ResourceManager.spend_stones(cost):
-			# 執行升級效果
-			volcano_core.level += 1
-			volcano_core.max_hp += 500  # 每次升級加 500 血量上限
-			volcano_core.current_hp = volcano_core.max_hp # 升級後自動補滿血
-			
-			# 廣播升級成功的訊息 (給 UI 更新等級顯示)
-			EventManager.volcano_upgraded.emit(volcano_core.level, volcano_core.current_hp, volcano_core.max_hp)
-			print("🔥 火山升級至等級 %d！上限提升至 %d" % [volcano_core.level, volcano_core.max_hp])
 
 var land_build_cost: int = 5 # MapManager 只需記錄「造陸的標價」
+
+# MapManager.gd 現在的 _on_upgrade_requested 變得超級乾淨
+func _on_upgrade_requested(target_type: String, upgrade_id: String):
+	if current_selected_pos == Vector2i(-10000, -10000): return
+	
+	# 火山的升級已經交給 SkillManager 處理了，這裡只管土地！
+	if target_type == "land":
+		var cost = 10
+		if ResourceManager.spend_stones(cost):
+			var data = grid_data[current_selected_pos]
+			data.max_hp += 100
+			data.current_hp = data.max_hp
+			print("🏝️ 土地已加固！新血量: ", data.max_hp)
+			_refresh_side_panel()
+
+# 🌟 補上這個函式：升級完畢後，呼叫這個讓側邊欄的數字立刻跳動更新
+func _refresh_side_panel():
+	if current_selected_pos == Vector2i(-10000, -10000) or not grid_data.has(current_selected_pos): 
+		return
+		
+	var data = grid_data[current_selected_pos]
+	var target = data.core_data if data.core_data else data
+	var info = {
+		"type": data.type,
+		"hp": target.current_hp,
+		"max_hp": target.max_hp,
+		"level": target.level if "level" in target else 1
+	}
+	EventManager.on_cell_selected.emit(info)
 
 # 乾淨俐落的造陸函式
 func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
@@ -146,11 +165,17 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 		print("這裡已經有土地了！")
 		return false
 		
-	# 2. 🌟 向資源銀行申請扣款
+	# 2. 土地相連
+	if not _is_adjacent_to_land(pos):
+		print("❌ 必須蓋在現有土地或海岸的旁邊！")
+		return false
+	
+	# 3. 向資源銀行申請扣款
 	if not ResourceManager.spend_stones(land_build_cost):
 		return false # 銀行回傳 false (錢不夠)，造陸直接失敗終止
+	
 		
-	# 3. 扣款成功，執行造陸邏輯
+	# 4. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
 	EventManager.simple_map_data[pos] = "LAND"
 	update_all_coasts()
@@ -271,25 +296,45 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸
 		
 
-# 處理玩家的輸入事件
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var mouse_global_pos = get_global_mouse_position()
-		var grid_pos = tilemap.local_to_map(mouse_global_pos)
+func _unhandled_input(event):
+	# 確保是滑鼠點擊事件，且是「按下」的瞬間
+	if event is InputEventMouseButton and event.pressed:
 		
-		# 如果點擊的地方已經有土地或火山，就當作是在「攻擊它」
-		if grid_data.has(grid_pos):
-			damage_land(grid_pos, 100) # 每次點擊扣 100 滴血
+		var grid_pos = tilemap.local_to_map(get_global_mouse_position())
 		
-		# 如果點擊的是海洋，且可以造陸，就造陸
-		elif _is_adjacent_to_land(grid_pos):
-			var success = build_land(grid_pos)
-			if success:
-				print("成功在網格 ", grid_pos, " 填海造陸！")
-		else:
-			print("只能在現有的土地邊緣進行擴張！")
+		# === 🟢 情況 A：玩家按下【左鍵】(互動 / 造陸) ===
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if grid_data.has(grid_pos):
+				
+				# 🌟🌟🌟 補上這行：記住玩家選了哪裡！ 🌟🌟🌟
+				current_selected_pos = grid_pos 
+				
+				# 1. 點到了已有的土地或火山 -> 開啟/更新右側升級面板
+				var data = grid_data[grid_pos]
+				var target = data.core_data if data.core_data else data
+				
+				var info = {
+					"type": data.type,
+					"hp": target.current_hp,
+					"max_hp": target.max_hp,
+					"level": target.level if "level" in target else 1
+				}
+				EventManager.on_cell_selected.emit(info)
+				
+			else:
+				# 2. 點到了海洋 -> 執行造陸邏輯！
+				build_land(grid_pos)
+				
+		
+		# === 🔴 情況 B：玩家按下【右鍵】(取消 / 關閉面板) ===
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			
+			# 🌟🌟🌟 補上這行：關閉面板時清空記憶！ 🌟🌟🌟
+			current_selected_pos = Vector2i(-10000, -10000) 
+			
+			# 廣播：請把 UI 關掉！
+			EventManager.close_ui_requested.emit()
 
-# 輔助函式：檢查某個座標旁邊是否有我們現有的土地
 func _is_adjacent_to_land(pos: Vector2i) -> bool:
 	for dir in NEIGHBORS:
 		var neighbor_pos = pos + dir

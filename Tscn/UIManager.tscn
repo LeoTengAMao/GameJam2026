@@ -16,8 +16,13 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 2
 size_flags_horizontal = 8
+mouse_filter = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SidePanel" unique_id=731220807]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LandNameLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=27459951]
 layout_mode = 2
 
 [node name="SidebarHPLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=179259485]
@@ -26,8 +31,13 @@ layout_mode = 2
 [node name="VolcanoLevelLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=458491824]
 layout_mode = 2
 
+[node name="UpgradeList" type="VBoxContainer" parent="SidePanel/VBoxContainer" unique_id=717610151]
+layout_mode = 2
+mouse_filter = 0
+
 [node name="HUD" type="Control" parent="." unique_id=1298107530]
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = -982.0
@@ -57,16 +67,6 @@ text = "Stone Label"
 [node name="VolcanoLevelLabel" type="Label" parent="HUD/PanelContainer/VBoxContainer" unique_id=866289225]
 layout_mode = 2
 text = "Voca Label"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="HUD/PanelContainer" unique_id=877769230]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="UpgradeButton" type="Button" parent="HUD/PanelContainer/HBoxContainer" unique_id=48991563]
-layout_mode = 2
-size_flags_horizontal = 10
-size_flags_vertical = 8
-text = "upgrade"
 
 [node name="Tooltip" type="Control" parent="." unique_id=1142001087]
 layout_mode = 3
