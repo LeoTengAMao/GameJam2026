@@ -5,6 +5,7 @@ const CELL_SIZE := 128
 const ORIGIN_OFFSET := Vector2(64, 64)
 const INVALID_TARGET := Vector2i(-999, -999)
 const OCTOPUS_RANGE := 5
+var generation: int = 0
 
 # 火山（中間四格）
 const VOLCANO_CELLS := [
@@ -105,6 +106,7 @@ func initialize(monster_type: MonsterType, pos: Vector2i, hp_value: int, atk: in
 	path = []
 	add_to_group("monsters")
 	_reserve_cell(grid_pos)
+	generation += 1  # 每次重新啟用，世代遞增
 	on_generate.emit()
 
 func _exit_tree():
@@ -193,16 +195,21 @@ func _find_best_volcano_adjacent() -> Vector2i:
 	return best
 
 # =========================
-# BFS 路徑
+# A* 路徑
 # =========================
 func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2i]:
-	var queue: Array[Vector2i] = [grid_pos]
+	var open_set: Array[Vector2i] = [grid_pos]
 	var came_from: Dictionary = {}
-	came_from[grid_pos] = grid_pos
-	var directions = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var g_score: Dictionary = { grid_pos: 0.0 }
+	var f_score: Dictionary = { grid_pos: _heuristic(grid_pos, t) }
 
-	while not queue.is_empty():
-		var current = queue.pop_front()
+	while not open_set.is_empty():
+		# 找 f_score 最小的節點
+		var current = open_set[0]
+		for node in open_set:
+			if f_score.get(node, INF) < f_score.get(current, INF):
+				current = node
+
 		if current == t:
 			var result: Array[Vector2i] = []
 			var c = t
@@ -210,20 +217,32 @@ func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2
 				result.push_front(c)
 				c = came_from[c]
 			return result
+
+		open_set.erase(current)
+
+		var directions = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 		for dir in directions:
 			var next = current + dir
-			if came_from.has(next):
-				continue
 			if _is_volcano(next) and next != t:
 				continue
 			if next != t and next in occupied:
 				continue
 			if abs(next.x) > 50 or abs(next.y) > 50:
 				continue
-			came_from[next] = current
-			queue.append(next)
+
+			var tentative_g = g_score.get(current, INF) + 1.0
+			if tentative_g < g_score.get(next, INF):
+				came_from[next] = current
+				g_score[next] = tentative_g
+				f_score[next] = tentative_g + _heuristic(next, t)
+				if next not in open_set:
+					open_set.append(next)
 
 	return []
+
+func _heuristic(a: Vector2i, b: Vector2i) -> float:
+	# Manhattan distance，格子移動不走斜線所以最準確
+	return abs(a.x - b.x) + abs(a.y - b.y)
 
 # =========================
 # MAIN LOOP
@@ -321,6 +340,7 @@ func _handle_move_jellyfish(delta):
 	_reserve_cell(grid_pos)
 	global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
 	move_cooldown = 1.0 / max(speed, 0.1)
+
 
 # =========================
 # 章魚 MOVE（走到火山射程內就停）
@@ -438,7 +458,8 @@ func _attack_octopus_ranged():
 	bullet.initialize(
 		global_position,
 		Vector2(target) * CELL_SIZE + ORIGIN_OFFSET,
-		attack_damage
+		attack_damage,
+		self
 	)
 	attack_cooldown = attack_interval
 
@@ -458,17 +479,32 @@ func _attack_starfish():
 # =========================
 # 子彈
 # =========================
+# Bullet (在 Monster.gd 內)
 class Bullet extends Node2D:
 	var target_pos: Vector2
 	var damage: int
 	var speed: float = 300.0
+	var owner_monster: Monster = null
+	var owner_generation: int = -1  # 記住發射當下的世代
 
-	func initialize(from: Vector2, to: Vector2, dmg: int):
+	func initialize(from: Vector2, to: Vector2, dmg: int, owner: Monster):
 		global_position = from
 		target_pos = to
 		damage = dmg
+		owner_monster = owner
+		owner_generation = owner.generation  # 快照當下世代
+
+	func _is_owner_alive() -> bool:
+		if not is_instance_valid(owner_monster):
+			return false
+		if not owner_monster.visible:
+			return false
+		return owner_monster.generation == owner_generation  # 世代不符就視為已死
 
 	func _process(delta):
+		if not _is_owner_alive():
+			queue_free()
+			return
 		var direction = target_pos - global_position
 		if direction.length() <= speed * delta:
 			global_position = target_pos
@@ -480,10 +516,8 @@ class Bullet extends Node2D:
 		draw_circle(Vector2.ZERO, 6, Color.BLACK)
 
 	func _on_hit():
-		var hit_grid = Vector2i(
-			int((global_position.x - 64) / 128),
-			int((global_position.y - 64) / 128)
-		)
-		
+		if not _is_owner_alive():
+			queue_free()
+			return
 		EventManager.command_damage_land.emit(Vector2i(0, 0), damage)
 		queue_free()
