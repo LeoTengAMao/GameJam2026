@@ -2,7 +2,7 @@ extends Node2D
 class_name MapManager
 
 enum CellType { SEA, LAND, COAST, VOLCANO, OCEAN_HEART }
-const TILE_SOURCE_ID = 2 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
+const TILE_SOURCE_ID = 5 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
 
 var ocean_heart_rect: Rect2i
 class CellData:

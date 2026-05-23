@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://bxaewxvy0rouv" path="res://Assests/Tile/Volcano.png" id="6_rfj0g"]
 [ext_resource type="Texture2D" uid="uid://bdpckm7dwg0fv" path="res://Assests/Tile/HeartOfOcean.png" id="7_4j60b"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
+[ext_resource type="Texture2D" uid="uid://xx1mdlkdtktc" path="res://Assests/Tile/LandTile.png" id="8_28hiu"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
 [ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
 [ext_resource type="PackedScene" uid="uid://jrq8ojai3yye" path="res://Tscn/EndGameUI.tscn" id="11_nvhh3"]
@@ -199,6 +200,25 @@ texture_region_size = Vector2i(128, 128)
 1:2/0 = 0
 2:2/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e1m61"]
+texture = ExtResource("8_28hiu")
+texture_region_size = Vector2i(128, 128)
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_7e4a0"]
 tile_size = Vector2i(128, 128)
 sources/1 = SubResource("TileSetAtlasSource_rgg21")
@@ -206,6 +226,7 @@ sources/0 = SubResource("TileSetAtlasSource_ba2e8")
 sources/2 = SubResource("TileSetAtlasSource_rfj0g")
 sources/3 = SubResource("TileSetAtlasSource_4j60b")
 sources/4 = SubResource("TileSetAtlasSource_28hiu")
+sources/5 = SubResource("TileSetAtlasSource_e1m61")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7e4a0"]
 texture = ExtResource("2_7e4a0")
