@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://crbu2knia2ar0" path="res://Script/GenerateRock/GenerateArea.gd" id="1_rhn4k"]
 
 [node name="GenerateArea" type="Node2D" unique_id=892054703]
-visible = false
 script = ExtResource("1_rhn4k")
 width = 120.0
 height = 120.0
