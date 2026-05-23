@@ -4,6 +4,7 @@ class_name Monster
 const CELL_SIZE := 128
 const ORIGIN_OFFSET := Vector2(64, 64)
 const INVALID_TARGET := Vector2i(-999, -999)
+const OCTOPUS_RANGE := 5
 
 # 火山（中間四格）
 const VOLCANO_CELLS := [
@@ -43,13 +44,15 @@ func _is_cell_free(pos: Vector2i) -> bool:
 # TYPE
 # =========================
 enum MonsterType {
+	JELLYFISH,
 	OCTOPUS,
 	STARFISH
 }
 var type: MonsterType
 var texture_map = {
-	MonsterType.OCTOPUS: preload("res://Assests/Monster/oct.png"),
-	MonsterType.STARFISH: preload("res://Assests/Monster/star.png")
+	MonsterType.JELLYFISH: preload("res://Assests/Monster/jellyfish.png"),
+	MonsterType.OCTOPUS:   preload("res://Assests/Monster/oct.png"),
+	MonsterType.STARFISH:  preload("res://Assests/Monster/star.png")
 }
 
 # =========================
@@ -138,34 +141,6 @@ func _is_adjacent_to_volcano(pos: Vector2i) -> bool:
 			return true
 	return false
 
-# =========================
-# MAIN LOOP
-# =========================
-func _process(delta):
-	match state:
-		State.SEARCH:
-			if type == MonsterType.STARFISH:
-				_handle_search_starfish()
-			else:
-				_handle_search()
-		State.MOVE:
-			if type == MonsterType.STARFISH:
-				_handle_move_starfish(delta)
-			else:
-				_handle_move(delta)
-		State.ATTACK:
-			_handle_attack(delta)
-
-# =========================
-# 章魚 SEARCH
-# =========================
-func _handle_search():
-	target = _find_nearest_land()
-	if target == INVALID_TARGET:
-		return
-	path = []
-	state = State.MOVE
-
 func _find_nearest_land() -> Vector2i:
 	var lands = EventManager.simple_map_data.keys()
 	if lands.is_empty():
@@ -181,15 +156,25 @@ func _find_nearest_land() -> Vector2i:
 			best = p
 	return best
 
-# =========================
-# 海星 SEARCH
-# =========================
-func _handle_search_starfish():
-	target = _find_best_volcano_adjacent()
-	if target == INVALID_TARGET:
-		return
-	path = []
-	state = State.MOVE
+func _find_nearest_volcano() -> Vector2i:
+	var best = INVALID_TARGET
+	var best_dist = INF
+	for cell in VOLCANO_CELLS:
+		var d = grid_pos.distance_to(cell)
+		if d < best_dist:
+			best_dist = d
+			best = cell
+	return best
+
+func _find_volcano_in_range(range_cells: int) -> Vector2i:
+	var best = INVALID_TARGET
+	var best_dist = INF
+	for cell in VOLCANO_CELLS:
+		var d = grid_pos.distance_to(cell)
+		if d <= range_cells and d < best_dist:
+			best_dist = d
+			best = cell
+	return best
 
 func _find_best_volcano_adjacent() -> Vector2i:
 	var candidates = _get_volcano_adjacent_cells()
@@ -239,9 +224,69 @@ func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2
 	return []
 
 # =========================
-# 章魚 MOVE
+# MAIN LOOP
 # =========================
-func _handle_move(delta):
+func _process(delta):
+	match state:
+		State.SEARCH:
+			match type:
+				MonsterType.JELLYFISH:
+					_handle_search_jellyfish()
+				MonsterType.OCTOPUS:
+					_handle_search_octopus()
+				MonsterType.STARFISH:
+					_handle_search_starfish()
+		State.MOVE:
+			match type:
+				MonsterType.JELLYFISH:
+					_handle_move_jellyfish(delta)
+				MonsterType.OCTOPUS:
+					_handle_move_octopus(delta)
+				MonsterType.STARFISH:
+					_handle_move_starfish(delta)
+		State.ATTACK:
+			_handle_attack(delta)
+
+# =========================
+# 水母 SEARCH
+# =========================
+func _handle_search_jellyfish():
+	target = _find_nearest_land()
+	if target == INVALID_TARGET:
+		return
+	path = []
+	state = State.MOVE
+
+# =========================
+# 章魚 SEARCH
+# =========================
+func _handle_search_octopus():
+	var in_range_target = _find_volcano_in_range(OCTOPUS_RANGE)
+	if in_range_target != INVALID_TARGET:
+		target = in_range_target
+		state = State.ATTACK
+		attack_cooldown = 0.0
+		return
+	target = _find_nearest_volcano()
+	if target == INVALID_TARGET:
+		return
+	path = []
+	state = State.MOVE
+
+# =========================
+# 海星 SEARCH
+# =========================
+func _handle_search_starfish():
+	target = _find_best_volcano_adjacent()
+	if target == INVALID_TARGET:
+		return
+	path = []
+	state = State.MOVE
+
+# =========================
+# 水母 MOVE
+# =========================
+func _handle_move_jellyfish(delta):
 	target = _find_nearest_land()
 
 	if target == INVALID_TARGET:
@@ -265,7 +310,44 @@ func _handle_move(delta):
 		return
 
 	var next_step = path.front()
+	if not _is_cell_free(next_step):
+		return
 
+	_release_cell(grid_pos)
+	path.pop_front()
+	grid_pos = next_step
+	_reserve_cell(grid_pos)
+	global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
+	move_cooldown = 1.0 / max(speed, 0.1)
+
+# =========================
+# 章魚 MOVE（走到火山射程內就停）
+# =========================
+func _handle_move_octopus(delta):
+	var in_range_target = _find_volcano_in_range(OCTOPUS_RANGE)
+	if in_range_target != INVALID_TARGET:
+		target = in_range_target
+		path = []
+		state = State.ATTACK
+		attack_cooldown = 0.0
+		return
+
+	target = _find_nearest_volcano()
+	if target == INVALID_TARGET:
+		state = State.SEARCH
+		return
+
+	move_cooldown -= delta
+	if move_cooldown > 0:
+		return
+
+	var occupied = _get_occupied_cells()
+	path = _find_path_to(target, occupied)
+
+	if path.is_empty():
+		return
+
+	var next_step = path.front()
 	if not _is_cell_free(next_step):
 		return
 
@@ -311,7 +393,6 @@ func _handle_move_starfish(delta):
 		return
 
 	var next_step = path.front()
-
 	if not _is_cell_free(next_step):
 		return
 
@@ -330,17 +411,34 @@ func _handle_attack(delta):
 	if attack_cooldown > 0:
 		return
 
-	if type == MonsterType.STARFISH:
-		_attack_starfish()
-	else:
-		_attack_octopus()
+	match type:
+		MonsterType.JELLYFISH:
+			_attack_jellyfish()
+		MonsterType.OCTOPUS:
+			_attack_octopus_ranged()
+		MonsterType.STARFISH:
+			_attack_starfish()
 
-func _attack_octopus():
+func _attack_jellyfish():
 	if EventManager.simple_map_data.has(grid_pos):
 		EventManager.command_damage_land.emit(grid_pos, attack_damage)
 		attack_cooldown = attack_interval
 	else:
 		state = State.SEARCH
+
+func _attack_octopus_ranged():
+	target = _find_volcano_in_range(OCTOPUS_RANGE)
+	if target == INVALID_TARGET:
+		state = State.SEARCH
+		return
+	var bullet = Bullet.new()
+	get_parent().add_child(bullet)
+	bullet.initialize(
+		global_position,
+		Vector2(target) * CELL_SIZE + ORIGIN_OFFSET,
+		attack_damage
+	)
+	attack_cooldown = attack_interval
 
 func _attack_starfish():
 	var directions = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
@@ -354,3 +452,36 @@ func _attack_starfish():
 		attack_cooldown = attack_interval
 	else:
 		state = State.SEARCH
+
+# =========================
+# 子彈
+# =========================
+class Bullet extends Node2D:
+	var target_pos: Vector2
+	var damage: int
+	var speed: float = 300.0
+
+	func initialize(from: Vector2, to: Vector2, dmg: int):
+		global_position = from
+		target_pos = to
+		damage = dmg
+
+	func _process(delta):
+		var direction = target_pos - global_position
+		if direction.length() <= speed * delta:
+			global_position = target_pos
+			_on_hit()
+		else:
+			global_position += direction.normalized() * speed * delta
+
+	func _draw():
+		draw_circle(Vector2.ZERO, 6, Color.BLACK)
+
+	func _on_hit():
+		var hit_grid = Vector2i(
+			int((global_position.x - 64) / 128),
+			int((global_position.y - 64) / 128)
+		)
+		
+		EventManager.command_damage_land.emit(Vector2i(0, 0), damage)
+		queue_free()
