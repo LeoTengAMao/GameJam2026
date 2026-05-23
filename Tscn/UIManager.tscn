@@ -16,11 +16,10 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 2
 size_flags_horizontal = 8
-mouse_filter = 2
+mouse_filter = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SidePanel" unique_id=731220807]
 layout_mode = 2
-mouse_filter = 2
 
 [node name="LandNameLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=27459951]
 layout_mode = 2
@@ -33,7 +32,6 @@ layout_mode = 2
 
 [node name="UpgradeList" type="VBoxContainer" parent="SidePanel/VBoxContainer" unique_id=717610151]
 layout_mode = 2
-mouse_filter = 0
 
 [node name="HUD" type="Control" parent="." unique_id=1298107530]
 layout_mode = 3
@@ -59,6 +57,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/PanelContainer" unique_id=1693836147]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="StoneLabel" type="Label" parent="HUD/PanelContainer/VBoxContainer" unique_id=285244337]
 layout_mode = 2
