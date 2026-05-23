@@ -38,3 +38,4 @@ signal close_ui_requested
 
 var is_heart_surrounded: bool = false
 signal game_won
+signal game_over

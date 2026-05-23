@@ -10,6 +10,8 @@
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
 [ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
+[ext_resource type="PackedScene" uid="uid://jrq8ojai3yye" path="res://Tscn/EndGameUI.tscn" id="11_nvhh3"]
+[ext_resource type="Shader" uid="uid://wsbnr5jpmsdh" path="res://Assests/Shader/Ocean.gdshader" id="12_bfyrq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
 texture = ExtResource("2_7e4a0")
@@ -191,6 +193,24 @@ sources/0 = SubResource("TileSetAtlasSource_7e4a0")
 
 [sub_resource type="PackedScene" id="PackedScene_105op"]
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bfyrq"]
+noise_type = 2
+frequency = 0.0486
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1x38d"]
+noise = SubResource("FastNoiseLite_bfyrq")
+seamless = true
+seamless_blend_skirt = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1x38d"]
+shader = ExtResource("12_bfyrq")
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_1x38d")
+shader_parameter/deep_water = Color(0.08, 0.35, 0.6, 1)
+shader_parameter/shallow_water = Color(0.15, 0.6, 0.8, 1)
+shader_parameter/foam_color = Color(0.9, 0.95, 1, 1)
+shader_parameter/wave_speed = 0.05
+shader_parameter/wave_scale = 1.5
+
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
 
@@ -219,3 +239,17 @@ area_scene = ExtResource("8_nvhh3")
 [node name="SkillManager" type="Node2D" parent="." unique_id=612887923]
 script = ExtResource("9_105op")
 CD = SubResource("PackedScene_105op")
+
+[node name="EndUI" parent="." unique_id=16656824 instance=ExtResource("11_nvhh3")]
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=873417670]
+layer = -5
+
+[node name="Ocean" type="ColorRect" parent="Background" unique_id=1737348571]
+material = SubResource("ShaderMaterial_1x38d")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
