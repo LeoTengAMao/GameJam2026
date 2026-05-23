@@ -10,7 +10,7 @@ func _ready() -> void:
 func add_stones(amount: int) -> void:
 	current_stones += amount
 	EventManager.stone_count_changed.emit(current_stones)
-	print("💎 獲得石頭！目前總數: ", current_stones)
+	print("獲得石頭！目前總數: ", current_stones)
 
 func spend_stones(cost: int) -> bool:
 	if current_stones >= cost:

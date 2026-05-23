@@ -2,10 +2,55 @@
 
 [ext_resource type="Script" uid="uid://cf7wxunmy6d3x" path="res://Script/UIManager.gd" id="1_2gmx0"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2gmx0"]
+
 [node name="CanvasLayer" type="CanvasLayer" unique_id=834032828]
 script = ExtResource("1_2gmx0")
 
-[node name="HPLabel" type="Label" parent="." unique_id=1615022214]
+[node name="HUD" type="Control" parent="." unique_id=1298107530]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HUD" unique_id=859710219]
+layout_mode = 0
+anchor_right = 28.8
+anchor_bottom = 16.2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_2gmx0")
+metadata/_edit_use_anchors_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/PanelContainer" unique_id=1693836147]
+layout_mode = 2
+
+[node name="StoneLabel" type="Label" parent="HUD/PanelContainer/VBoxContainer" unique_id=285244337]
+layout_mode = 2
+text = "Stone Label"
+
+[node name="VolcanoLevelLabel" type="Label" parent="HUD/PanelContainer/VBoxContainer" unique_id=866289225]
+layout_mode = 2
+text = "Voca Label"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/PanelContainer" unique_id=877769230]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="UpgradeButton" type="Button" parent="HUD/PanelContainer/HBoxContainer" unique_id=48991563]
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 8
+text = "upgrade"
+
+[node name="Tooltip" type="Control" parent="." unique_id=1142001087]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="HPLabel" type="Label" parent="Tooltip" unique_id=1615022214]
+layout_mode = 0
 offset_right = 74.0
 offset_bottom = 34.0
-text = "HP:"

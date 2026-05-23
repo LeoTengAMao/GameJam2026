@@ -23,7 +23,8 @@ ResourceManager="*uid://sracwmvu4y58"
 
 [display]
 
-window/stretch/mode="viewport"
+window/size/borderless=true
+window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
 [dotnet]

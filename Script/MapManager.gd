@@ -113,6 +113,27 @@ func _ready():
 	
 	add_child(erosion_timer) # 把計時器加入場景樹中
 	print("🌊 海洋侵蝕機制已啟動！")
+	# 🔌 監聽升級請求
+	EventManager.upgrade_requested.connect(_on_upgrade_requested)
+	
+func _on_upgrade_requested(type: String):
+	if type == "volcano":
+		var volcano_core = grid_data[Vector2i(0,0)].core_data
+		
+		# 計算升級費用 (例如：等級 * 50)
+		var cost = volcano_core.level * 50
+		
+		# 向銀行申請扣款
+		if ResourceManager.spend_stones(cost):
+			# 執行升級效果
+			volcano_core.level += 1
+			volcano_core.max_hp += 500  # 每次升級加 500 血量上限
+			volcano_core.current_hp = volcano_core.max_hp # 升級後自動補滿血
+			
+			# 廣播升級成功的訊息 (給 UI 更新等級顯示)
+			EventManager.volcano_upgraded.emit(volcano_core.level, volcano_core.current_hp, volcano_core.max_hp)
+			print("🔥 火山升級至等級 %d！上限提升至 %d" % [volcano_core.level, volcano_core.max_hp])
+
 var land_build_cost: int = 5 # MapManager 只需記錄「造陸的標價」
 
 # 乾淨俐落的造陸函式
@@ -242,7 +263,6 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 			tilemap.set_cell(pos, 1, Vector2i(1, 0)) # 藍色海岸
 		
 
-# 處理玩家的輸入事件
 # 處理玩家的輸入事件
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:

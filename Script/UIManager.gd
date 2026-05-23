@@ -1,24 +1,48 @@
 extends CanvasLayer
 
-@onready var hp_label: Label = $HPLabel
-var is_showing: bool = false # 記錄目前是否該顯示 UI
+# 🌟 靜態介面 (HUD)
+@onready var stone_label: Label = $HUD/PanelContainer/VBoxContainer/StoneLabel
+@onready var volcano_level_label: Label = $HUD/PanelContainer/VBoxContainer/VolcanoLevelLabel
+@onready var upgrade_button: Button = $HUD/PanelContainer/HBoxContainer/UpgradeButton
+
+# 🌟 動態提示 (Tooltip)
+@onready var tooltip: Control = $Tooltip
+@onready var hp_label: Label = $Tooltip/HPLabel
+
+var is_showing_tooltip: bool = false
 
 func _ready() -> void:
-	# 🔌 訂閱電台：聽到地圖廣播時，執行 _on_hover 函式
 	EventManager.on_cell_hovered.connect(_on_hover)
-	hp_label.hide() # 一開始先隱藏
+	EventManager.stone_count_changed.connect(_on_stone_count_changed)
+	EventManager.volcano_upgraded.connect(_on_volcano_upgraded)
+	
+	# 按鈕連線
+	upgrade_button.pressed.connect(func(): EventManager.upgrade_requested.emit("volcano"))
+	
+	tooltip.hide()
+	volcano_level_label.text = "火山等級: 1"
+
+# --- HUD 靜態介面更新邏輯 ---
+
+func _on_stone_count_changed(new_amount: int):
+	stone_label.text = "🪨 目前石頭: %d" % new_amount
+
+func _on_volcano_upgraded(level: int, _cur_hp: int, _max_hp: int):
+	volcano_level_label.text = "火山等級: %d" % level
+	upgrade_button.text = "升級火山 (%d 顆石頭)" % (level * 50)
+
+# --- Tooltip 動態提示更新邏輯 ---
 
 func _on_hover(is_hovering: bool, type_name: String, current_hp: int, max_hp: int) -> void:
-	is_showing = is_hovering # 儲存狀態
+	is_showing_tooltip = is_hovering
 	
 	if is_hovering:
-		# 更新文字內容
 		hp_label.text = "[%s]\n血量: %d / %d" % [type_name, current_hp, max_hp]
-		hp_label.show()
+		tooltip.show() # 顯示整個 Tooltip 群組
 	else:
-		hp_label.hide()
+		tooltip.hide()
 
 func _process(_delta: float) -> void:
-	# 讓 Label 永遠跟著滑鼠跑 (滑鼠座標 + 偏移量)
-	if is_showing:
-		hp_label.global_position = get_viewport().get_mouse_position() + Vector2(15, 15)
+	# 只要讓 Tooltip 這個節點跟著滑鼠跑，HUD 完全不受影響
+	if is_showing_tooltip:
+		tooltip.global_position = get_viewport().get_mouse_position() + Vector2(15, 15)
