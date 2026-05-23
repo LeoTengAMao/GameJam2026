@@ -358,10 +358,10 @@ func _unhandled_input(event):
 				build_land(grid_pos)
 				
 		
-		# === 🔴 情況 B：玩家按下【右鍵】(取消 / 關閉面板) ===
+		# === 情況 B：玩家按下【右鍵】(取消 / 關閉面板) ===
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			
-			# 🌟🌟🌟 補上這行：關閉面板時清空記憶！ 🌟🌟🌟
+			
 			current_selected_pos = Vector2i(-10000, -10000) 
 			
 			# 廣播：請把 UI 關掉！

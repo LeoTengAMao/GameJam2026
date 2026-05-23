@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Tscn/Camera.gd" id="2_huse1"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
-[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]

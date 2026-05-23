@@ -98,6 +98,7 @@ func _on_cell_selected(data: Dictionary):
 		1: name_label.text = "陸地"
 		2: name_label.text = "海岸"
 		3: name_label.text = "火山"
+		4: name_label.text = "海洋之心"
 		_: name_label.text = "錯誤"
 
 	# 🔧 修正：用 free() 乾淨、立刻刪除舊按鈕，防止 queue_free() 的幀延遲導致點擊錯位

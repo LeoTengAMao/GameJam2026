@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://jrq8ojai3yye"]
+
+[ext_resource type="Script" path="res://Tscn/EndGameUI.gd" id="1_q17qw"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=16656824]
+script = ExtResource("1_q17qw")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1238039805]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(0, 0, 0, 0.61960787)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=623757821]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=424355658]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer" unique_id=1411429443]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1972189783]
+layout_mode = 2
+theme_override_font_sizes/font_size = 46
+
+[node name="DescLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1977582193]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+
+[node name="RestartBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1867505901]
+layout_mode = 2
+text = "重新開始"
