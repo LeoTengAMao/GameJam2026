@@ -20,6 +20,7 @@ const OCEAN_HEART_CELLS := [
 ]
 
 signal collected
+signal on_generate
 
 @onready var sprite: Sprite2D = $Sprite2D
 
@@ -104,6 +105,7 @@ func initialize(monster_type: MonsterType, pos: Vector2i, hp_value: int, atk: in
 	path = []
 	add_to_group("monsters")
 	_reserve_cell(grid_pos)
+	on_generate.emit()
 
 func _exit_tree():
 	_release_cell(grid_pos)

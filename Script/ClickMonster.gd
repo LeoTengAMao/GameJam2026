@@ -12,6 +12,10 @@ func _ready() -> void:
 
 	# 2. 訂閱 Godot 內建的滑鼠移入訊號
 	input_event.connect(_input_event)
+	monster.on_generate.connect(reset_collected)
+
+func reset_collected() -> void:
+	_is_collected = false
 
 func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
 	if _is_collected:
@@ -32,7 +36,6 @@ func _collect() -> void:
 	# 3. 發送訊號通知物件池持有人來回收我
 	monster.collected.emit(monster)
 	EventManager.stone_collected.emit(-1)
-	_is_collected = false
 
 func destroy() -> void:
 	# 1. 這裡可以處理遊戲邏輯（例如：玩家金幣 + resource_amount）
