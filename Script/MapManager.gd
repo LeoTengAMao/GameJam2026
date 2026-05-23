@@ -10,6 +10,7 @@ class CellData:
 	var current_hp: int
 	var max_hp: int
 	var level: int
+	var area: GenerateArea
 	
 	#  新增：用來連結共用資料的參照 (Reference)
 	var core_data: CellData = null
@@ -291,6 +292,7 @@ func _destroy_land(pos: Vector2i):
 	
 	# 3. 因為有土地消失了，原本在它旁邊的內陸可能會變成新的海岸！
 	update_all_coasts()
+	EventManager.on_destory_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 
 
 func _set_visual_tile(pos: Vector2i, type: CellType):

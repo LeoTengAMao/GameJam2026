@@ -4,6 +4,8 @@ extends Node
 # 注意：此腳本請在 Godot 的 Project Settings -> Autoload 中註冊，名稱設為 "GenerateManager"
 # 註冊後，它會自動變成全域單例，不需要再手動寫 C# 的 Instance。
 
+signal on_cancel_area(area: GenerateArea);
+
 var _areas: Array[GenerateArea] = []
 
 # 供 GenerateArea 呼叫的註冊方法
@@ -14,6 +16,7 @@ func register_area(area: GenerateArea) -> void:
 func cancel_area(area: GenerateArea) -> void:
 	if _areas.has(area):
 		_areas.erase(area)
+		on_cancel_area.emit(area);
 
 # 依照面積權重，隨機挑選一個 Area
 func _pick_area_by_weight() -> GenerateArea:
@@ -50,3 +53,18 @@ func get_random_spawn_global_position() -> Variant:
 
 	# 將相對座標轉換為 Godot 的世界全域座標 (GlobalPosition)
 	return selected_area.to_global(local_pos)
+	
+func get_spawn_global_position(selected_area: GenerateArea) -> Variant:
+	if selected_area == null:
+		push_warning("沒有任何註冊的 GenerateArea！")
+		return null
+
+	# 取得該 Area 內部的隨機相對座標
+	var local_pos = selected_area.get_random_local_position()
+
+	# 將相對座標轉換為 Godot 的世界全域座標 (GlobalPosition)
+	return selected_area.to_global(local_pos)
+	
+func get_pick_area() -> GenerateArea:
+	var selected_area = _pick_area_by_weight()
+	return selected_area

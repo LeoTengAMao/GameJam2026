@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Tscn/Camera.gd" id="2_huse1"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
-[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
-[ext_resource type="PackedScene" path="res://Tscn/timer.tscn" id="6_105op"]
+[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
 [ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
@@ -208,15 +208,11 @@ tile_set = SubResource("TileSet_ba2e8")
 [node name="CanvasLayer" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]
 
 [node name="RockPool" parent="." unique_id=959581959 instance=ExtResource("5_x7wua")]
-position = Vector2(-2138, -1436)
 
-[node name="CooldownRockGenerator" parent="." unique_id=992922893 node_paths=PackedStringArray("rock_pool") instance=ExtResource("6_105op")]
-position = Vector2(-2015, -1350)
-spawn_interval = 1.0
+[node name="RockGenerator" parent="." unique_id=992922893 node_paths=PackedStringArray("rock_pool") instance=ExtResource("6_105op")]
 rock_pool = NodePath("../RockPool")
 
 [node name="AreaPool" type="Node2D" parent="." unique_id=728407797]
-position = Vector2(-2147, -1304)
 script = ExtResource("7_huse1")
 area_scene = ExtResource("8_nvhh3")
 

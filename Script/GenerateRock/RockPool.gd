@@ -35,6 +35,7 @@ func _init_pool() -> void:
 	)
 
 # 當你想在地圖上生成石頭時
-func spawn_rock(position: Vector2) -> void:
+func spawn_rock(position: Vector2) -> Rock:
 	var rock = _rock_pool.get_item() as Rock
 	rock.initialize(position)
+	return rock

@@ -2,13 +2,5 @@
 
 [ext_resource type="Script" uid="uid://d2mrr3rcylo21" path="res://Script/GenerateRock/CooldownRockGenerator.gd" id="1_y1ag5"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_h0mux"]
-radius = 83.0542
-
-[node name="Timer" type="Area2D" unique_id=992922893 node_paths=PackedStringArray("rock_pool")]
+[node name="Timer" type="Node2D" unique_id=1234211020]
 script = ExtResource("1_y1ag5")
-rock_pool = NodePath("")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=817284202]
-position = Vector2(79, 87)
-shape = SubResource("CircleShape2D_h0mux")
