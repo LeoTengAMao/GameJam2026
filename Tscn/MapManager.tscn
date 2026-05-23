@@ -5,7 +5,8 @@
 [ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Script/Camera.gd" id="2_huse1"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
-[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="Texture2D" path="res://Assests/Tile/test.png" id="5_aylwq"]
+[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
@@ -155,10 +156,31 @@ texture_region_size = Vector2i(128, 128)
 0:0/0 = 0
 0:1/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rfj0g"]
+texture = ExtResource("5_aylwq")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_7e4a0"]
 tile_size = Vector2i(128, 128)
 sources/1 = SubResource("TileSetAtlasSource_rgg21")
 sources/0 = SubResource("TileSetAtlasSource_ba2e8")
+sources/2 = SubResource("TileSetAtlasSource_rfj0g")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7e4a0"]
 texture = ExtResource("2_7e4a0")
@@ -219,7 +241,7 @@ shader_parameter/wave_scale = 1.5
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=643693630]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=643693630 groups=["MapCamara"]]
 position = Vector2(575, 324)
 zoom = Vector2(0.3, 0.3)
 script = ExtResource("2_huse1")
