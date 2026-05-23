@@ -1,0 +1,160 @@
+[gd_scene format=3 uid="uid://dgkqgw0uk4kk8"]
+
+[ext_resource type="Texture2D" uid="uid://djjlsjow2rxho" path="res://Assests/螢幕擷取畫面 2026-05-09 201217.png" id="1_u6lxv"]
+[ext_resource type="Script" uid="uid://5mo7hsc2ve32" path="res://Script/Menu/ChangeSceneManager.gd" id="2_6rtcm"]
+
+[node name="Staff" type="Control" unique_id=632046482]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Control" parent="." unique_id=1058663693]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Panel" unique_id=655753009]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_u6lxv")
+expand_mode = 2
+
+[node name="Panel" type="Panel" parent="Panel" unique_id=738457806]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -275.0
+offset_right = 275.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel/Panel" unique_id=570500748]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 50
+
+[node name="Panel" type="VBoxContainer" parent="Panel/Panel/MarginContainer" unique_id=1787466412]
+layout_mode = 2
+
+[node name="Control6" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=1164306022]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control1" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=170952241]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/MarginContainer/Panel/Control1" unique_id=1313927056]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -41.5
+offset_right = 400.0
+offset_bottom = 41.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "Leo: 程式"
+vertical_alignment = 1
+
+[node name="Control2" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=1081903161]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/MarginContainer/Panel/Control2" unique_id=1817931144]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -41.5
+offset_right = 441.0
+offset_bottom = 41.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "Yoro: 程式+音樂"
+vertical_alignment = 1
+
+[node name="Control3" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=580757724]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/MarginContainer/Panel/Control3" unique_id=624701182]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -41.5
+offset_right = 400.0
+offset_bottom = 41.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "Starfish: 程式"
+vertical_alignment = 1
+
+[node name="Control4" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=1560090207]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/MarginContainer/Panel/Control4" unique_id=1967530070]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -41.5
+offset_right = 400.0
+offset_bottom = 41.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "薩西布栗: 美術"
+vertical_alignment = 1
+
+[node name="Control5" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=1931037695]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/MarginContainer/Panel/Control5" unique_id=1960001254]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -41.5
+offset_right = 400.0
+offset_bottom = 41.5
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "Hotcream: 美術"
+vertical_alignment = 1
+
+[node name="Control7" type="Control" parent="Panel/Panel/MarginContainer/Panel" unique_id=1771032178]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="." unique_id=1738806546]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_6rtcm")

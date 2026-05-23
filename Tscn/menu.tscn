@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://ds7vyeslibxf2"]
+
+[ext_resource type="Texture2D" uid="uid://b14dd8150kmf4" path="res://Assests/10232926.jpg" id="1_wtbr4"]
+[ext_resource type="Script" uid="uid://5mo7hsc2ve32" path="res://Script/Menu/ChangeSceneManager.gd" id="2_5vq8g"]
+
+[node name="Menu" type="Control" unique_id=632046482]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel" type="Control" parent="." unique_id=1058663693]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="Panel" unique_id=655753009]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_wtbr4")
+expand_mode = 2
+
+[node name="Panel" type="VBoxContainer" parent="Panel" unique_id=2129099682]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_right = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Control2" type="Control" parent="Panel/Panel" unique_id=245532875]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Panel/Panel/Control2" unique_id=587870538]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -41.5
+offset_right = 200.0
+offset_bottom = 41.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 60
+text = "Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="VBoxContainer" parent="Panel/Panel" unique_id=150775898]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="Start" type="Button" parent="Panel/Panel/Panel" unique_id=74212858]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 40
+text = "Start"
+
+[node name="Staff" type="Button" parent="Panel/Panel/Panel" unique_id=1058335155]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 40
+text = "Staffs"
+
+[node name="Exit" type="Button" parent="Panel/Panel/Panel" unique_id=457852843]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 40
+text = "Exit"
+
+[node name="Control" type="Control" parent="Panel/Panel" unique_id=1730299720]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="Control" type="Control" parent="." unique_id=1738806546]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_5vq8g")
+
+[connection signal="pressed" from="Panel/Panel/Panel/Start" to="Control" method="_on_start_button_pressed"]
+[connection signal="pressed" from="Panel/Panel/Panel/Staff" to="Control" method="_on_staff_button_pressed"]
+[connection signal="pressed" from="Panel/Panel/Panel/Exit" to="Control" method="_on_exit_button_pressed"]
