@@ -24,6 +24,7 @@ func _init_pool() -> void:
 			
 		# on_return:
 		func(monster: Monster):
+			print("不可視")
 			monster.visible = false,
 			
 		10 # initial_capacity
@@ -39,7 +40,6 @@ func spawn_monster_by_grid_pos(position: Vector2) -> void:
 	
 func pick_random_monster(position: Vector2) -> void:
 	var monster = _monster_pool.get_item() as Monster
-	add_child(monster)
 	
 	var hp_value = 1
 	var atk = 1

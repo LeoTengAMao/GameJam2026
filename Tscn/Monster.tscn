@@ -1,8 +1,19 @@
-[gd_scene format=3 uid="uid://c2e7mdk4th0te"]
+[gd_scene format=3 uid="uid://6kycchqdqhc5"]
 
 [ext_resource type="Script" uid="uid://c5fs3s646vw32" path="res://Script/Monster.gd" id="1_0y0td"]
+[ext_resource type="Script" uid="uid://dacpmbo4mk6mx" path="res://Script/ClickMonster.gd" id="2_ise3q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ise3q"]
+size = Vector2(128, 128)
 
 [node name="Monster" type="Node2D" unique_id=729395458]
 script = ExtResource("1_0y0td")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1692963647]
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1510724894 node_paths=PackedStringArray("monster")]
+script = ExtResource("2_ise3q")
+monster = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1148705995]
+shape = SubResource("RectangleShape2D_ise3q")
