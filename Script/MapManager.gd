@@ -29,6 +29,11 @@ const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
 # 視覺層：Godot 4.3 推薦使用 TileMapLayer
 @onready var tilemap: TileMapLayer = $TileMapLayer
+# 🌟 新增：抓住選取框層
+@onready var selection_tilemap: TileMapLayer = $SelectionLayer
+
+# 🌟 新增：記錄上一次滑鼠指著的網格，優化效能
+var last_hovered_pos: Vector2i = Vector2i(-10000, -10000)
 
 # === 動態侵蝕系統參數 ===
 var erosion_timer: Timer
@@ -42,22 +47,36 @@ var elapsed_time: float = 0.0       # 記錄遊戲過去了多少秒
 func _process(delta: float) -> void:
 	elapsed_time += delta
 	
-	# 取得滑鼠指著的網格
-	var mouse_grid_pos = tilemap.local_to_map(get_global_mouse_position())
+	# 1. 取得當前滑鼠的世界座標與網格座標
+	var mouse_global_pos = get_global_mouse_position()
+	var grid_pos = tilemap.local_to_map(mouse_global_pos)
 	
-	# 檢查該網格是否有土地
-	if grid_data.has(mouse_grid_pos):
-		var data = grid_data[mouse_grid_pos]
-		var target_data = data
-		if data.core_data != null:
-			target_data = data.core_data # 處理 2x2 火山血量
-			
-		var type_name = CellType.keys()[data.type]
+	# === 🌟 核心修改：黃色邊框提示系統 (陸地與海洋通用) 🌟 ===
+	
+	# 只有當滑鼠移到「新的格子」時才更新，避免每一幀都重複重畫，節省效能
+	if grid_pos != last_hovered_pos:
+		# A. 清除舊的邊框
+		selection_tilemap.clear()
 		
-		# 📢 重點：發射廣播訊號給 UI
+		# B. 在新的網格位置畫上黃色邊框
+		# 參數：(網格座標, 圖片集ID, Atlas座標(1,1)是黃色邊框)
+		# 註：不論該格有沒有土地(grid_data.has)，都會畫出邊框
+		selection_tilemap.set_cell(grid_pos, 0, Vector2i(0, 0)) 
+		
+		# C. 更新記錄點
+		last_hovered_pos = grid_pos
+	
+	
+	# === [原本的 UI 血量廣播邏輯，保持原樣] ===
+	if grid_data.has(grid_pos):
+		# ... [原本發射 true 訊號的邏輯] ...
+		var data = grid_data[grid_pos]
+		var target_data = data
+		if data.core_data != null: target_data = data.core_data
+		var type_name = CellType.keys()[data.type]
 		EventManager.on_cell_hovered.emit(true, type_name, target_data.current_hp, target_data.max_hp)
 	else:
-		# 📢 重點：發射廣播告知滑鼠在海洋上 (隱藏 UI)
+		# 發射 false 訊號告知滑鼠在海洋上
 		EventManager.on_cell_hovered.emit(false, "", 0, 0)
 
 func _ready():
@@ -80,8 +99,8 @@ func _ready():
 		
 		# 計算並更新海岸線狀態與視覺
 	update_all_coasts()
-	print("4x4 初始地圖與火山生成完畢！")
-	
+	print("4x4 初始地圖與火山生成完畢！")	
+	selection_tilemap.clear()
 	# ... [你原本的 4x4 與火山生成邏輯] ...
 	
 	# === 啟動侵蝕計時器 ===

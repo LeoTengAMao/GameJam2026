@@ -1,8 +1,14 @@
 [gd_scene format=3 uid="uid://bn7b4nsawas1k"]
 
 [ext_resource type="Script" uid="uid://crynuflkrd7j0" path="res://Script/MapManager.gd" id="1_xgl8j"]
+[ext_resource type="Texture2D" uid="uid://b7e3kyp7tcdv8" path="res://Assests/Tile/Yellow-hollow.png" id="2_7e4a0"]
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
+texture = ExtResource("2_7e4a0")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rgg21"]
 texture = ExtResource("2_rgg21")
@@ -139,12 +145,52 @@ texture_region_size = Vector2i(128, 128)
 [sub_resource type="TileSet" id="TileSet_7e4a0"]
 tile_size = Vector2i(128, 128)
 sources/1 = SubResource("TileSetAtlasSource_rgg21")
+sources/0 = SubResource("TileSetAtlasSource_ba2e8")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7e4a0"]
+texture = ExtResource("2_7e4a0")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ba2e8"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_7e4a0")
 
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2068174230]
 tile_set = SubResource("TileSet_7e4a0")
+
+[node name="SelectionLayer" type="TileMapLayer" parent="." unique_id=2087420023]
+tile_set = SubResource("TileSet_ba2e8")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1559490994]
 zoom = Vector2(0.3, 0.3)
