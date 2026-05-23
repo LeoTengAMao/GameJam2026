@@ -35,6 +35,7 @@ func _on_remove_area_rock(area: GenerateArea) -> void:
 		return
 	# 如果找不到這個 area，就回傳一個空陣列 []，for 迴圈就不會崩潰
 	var area_rocks = rocks.get(area, [])
+	print("hihihi", area_rocks)
 	for rock in area_rocks:
 		if rock != null:
 			rock.destroy()

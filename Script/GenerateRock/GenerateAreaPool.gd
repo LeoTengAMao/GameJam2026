@@ -15,6 +15,7 @@ func _init_pool() -> void:
 		# factory_method: 匿名函式建立與綁定
 		func():
 			var area = area_scene.instantiate() as GenerateArea
+			area.visible = false;
 			# 當石頭發出 collected 訊號時，自動還給池子
 			area.collected.connect(func(r): _area_pool.return_item(r))
 			add_child(area)
@@ -38,8 +39,7 @@ func spawn_area(position: Vector2) -> void:
 	var area = _area_pool.get_item() as GenerateArea
 	area.initialize(position)
 	area.enable()
-	_active_areas[Vector2i(position / 128.0)] = area
-	print(position, area)
+	_active_areas[Vector2i(position)] = area
 	
 func destory_area_by_pos(pos) -> void:
 	var key = Vector2i(int(pos.x), int(pos.y)) if pos is Vector2 else pos

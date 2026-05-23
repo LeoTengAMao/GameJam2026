@@ -47,4 +47,4 @@ func pick_random_monster(position: Vector2) -> void:
 	var atk_spd = 1
 	
 	# 3. 呼叫初始化：直接傳入整數 0，或是用 類別名.列舉名 傳入（最安全）
-	monster.initialize(Monster.MonsterType.OCTOPUS, position, hp_value, atk, spd, atk_spd)
+	monster.initialize(Monster.MonsterType.JELLYFISH, position, hp_value, atk, spd, atk_spd)

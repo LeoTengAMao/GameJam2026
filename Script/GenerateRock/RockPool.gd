@@ -14,6 +14,7 @@ func _init_pool() -> void:
 		# factory_method: 匿名函式建立與綁定
 		func():
 			var rock = rock_scene.instantiate() as Rock
+			rock.visible = false
 			# 當石頭發出 collected 訊號時，自動還給池子
 			rock.collected.connect(func(r): _rock_pool.return_item(r))
 			add_child(rock)
