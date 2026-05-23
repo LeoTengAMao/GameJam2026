@@ -25,7 +25,6 @@ ResourceManager="*uid://sracwmvu4y58"
 
 window/size/borderless=true
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
 
 [dotnet]
 

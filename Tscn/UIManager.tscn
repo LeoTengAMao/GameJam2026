@@ -9,15 +9,21 @@ script = ExtResource("1_2gmx0")
 
 [node name="HUD" type="Control" parent="." unique_id=1298107530]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -982.0
+offset_bottom = -649.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="HUD" unique_id=859710219]
-layout_mode = 0
-anchor_right = 28.8
-anchor_bottom = 16.2
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 25.05
+anchor_bottom = 18.325
+offset_right = -3106.5
+offset_bottom = 648.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_2gmx0")
 metadata/_edit_use_anchors_ = true

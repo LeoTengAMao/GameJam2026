@@ -186,13 +186,14 @@ sources/0 = SubResource("TileSetAtlasSource_7e4a0")
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
 
+[node name="Camera2D" type="Camera2D" parent="." unique_id=643693630]
+position = Vector2(575, 324)
+zoom = Vector2(0.3, 0.3)
+
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2068174230]
 tile_set = SubResource("TileSet_7e4a0")
 
 [node name="SelectionLayer" type="TileMapLayer" parent="." unique_id=2087420023]
 tile_set = SubResource("TileSet_ba2e8")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1559490994]
-zoom = Vector2(0.3, 0.3)
 
 [node name="CanvasLayer" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]
