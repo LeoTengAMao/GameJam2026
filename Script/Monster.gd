@@ -5,6 +5,8 @@ const CELL_SIZE := 128
 const ORIGIN_OFFSET := Vector2(64, 64)
 const INVALID_TARGET := Vector2i(-999, -999)
 const OCTOPUS_RANGE := 5
+const SEARCH_INTERVAL := 0.5  # 每 0.5 秒才重新找目標一次
+
 var generation: int = 0
 
 # 火山（中間四格）
@@ -82,6 +84,11 @@ var target: Vector2i = INVALID_TARGET
 var move_cooldown: float = 0.0
 var path: Array[Vector2i] = []
 
+# 水母路徑快取
+var _cached_target: Vector2i = INVALID_TARGET
+var _cached_nearest_land: Vector2i = INVALID_TARGET
+var _search_cooldown: float = 0.0
+
 # =========================
 # ATTACK CONTROL
 # =========================
@@ -104,9 +111,12 @@ func initialize(monster_type: MonsterType, pos: Vector2i, hp_value: int, atk: in
 	move_cooldown = 0.0
 	attack_cooldown = 0.0
 	path = []
+	_cached_target = INVALID_TARGET
+	_cached_nearest_land = INVALID_TARGET
+	_search_cooldown = 0.0
 	add_to_group("monsters")
 	_reserve_cell(grid_pos)
-	generation += 1  # 每次重新啟用，世代遞增
+	generation += 1
 	on_generate.emit()
 
 func _exit_tree():
@@ -152,13 +162,23 @@ func _find_nearest_land() -> Vector2i:
 	var best = INVALID_TARGET
 	var best_dist = INF
 	for p in lands:
-		if _is_volcano(p) or _is_ocean_heart(p):
+		var pi := Vector2i(int(p.x), int(p.y))
+		if _is_volcano(pi) or _is_ocean_heart(pi):
 			continue
 		var d = grid_pos.distance_to(p)
 		if d < best_dist:
 			best_dist = d
-			best = p
+			best = pi
 	return best
+
+# 節流版：每 SEARCH_INTERVAL 秒才重新掃地圖
+func _find_nearest_land_cached(delta: float) -> Vector2i:
+	_search_cooldown -= delta
+	if _search_cooldown > 0.0:
+		return _cached_nearest_land
+	_search_cooldown = SEARCH_INTERVAL
+	_cached_nearest_land = _find_nearest_land()
+	return _cached_nearest_land
 
 func _find_nearest_volcano() -> Vector2i:
 	var best = INVALID_TARGET
@@ -204,7 +224,6 @@ func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2
 	var f_score: Dictionary = { grid_pos: _heuristic(grid_pos, t) }
 
 	while not open_set.is_empty():
-		# 找 f_score 最小的節點
 		var current = open_set[0]
 		for node in open_set:
 			if f_score.get(node, INF) < f_score.get(current, INF):
@@ -241,7 +260,6 @@ func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2
 	return []
 
 func _heuristic(a: Vector2i, b: Vector2i) -> float:
-	# Manhattan distance，格子移動不走斜線所以最準確
 	return abs(a.x - b.x) + abs(a.y - b.y)
 
 # =========================
@@ -272,11 +290,7 @@ func _process(delta):
 # 水母 SEARCH
 # =========================
 func _handle_search_jellyfish():
-	target = _find_nearest_land()
-	if target == INVALID_TARGET:
-		return
-	path = []
-	state = State.MOVE
+	state = State.MOVE  # 直接開始漂，不需要找目標
 
 # =========================
 # 章魚 SEARCH
@@ -305,42 +319,55 @@ func _handle_search_starfish():
 	state = State.MOVE
 
 # =========================
-# 水母 MOVE
+# 水母 MOVE（漂流版）
 # =========================
 func _handle_move_jellyfish(delta):
-	target = _find_nearest_land()
-
-	if target == INVALID_TARGET:
-		state = State.SEARCH
-		return
-
-	if grid_pos == target:
-		path = []
-		state = State.ATTACK
-		attack_cooldown = 0.0
-		return
-
 	move_cooldown -= delta
 	if move_cooldown > 0:
 		return
 
-	var occupied = _get_occupied_cells()
-	path = _find_path_to(target, occupied)
-
-	if path.is_empty():
+	if EventManager.simple_map_data.has(grid_pos) and not _is_ocean_heart(grid_pos):
+		state = State.ATTACK
+		attack_cooldown = 0.0
 		return
 
-	var next_step = path.front()
-	if not _is_cell_free(next_step):
-		return
+	var toward_center_x = -sign(grid_pos.x) if grid_pos.x != 0 else 0
+	var toward_center_y = -sign(grid_pos.y) if grid_pos.y != 0 else 0
+	var wx = clamp(abs(grid_pos.x) / 10.0, 0.5, 3.0)
+	var wy = clamp(abs(grid_pos.y) / 10.0, 0.5, 3.0)
 
-	_release_cell(grid_pos)
-	path.pop_front()
-	grid_pos = next_step
-	_reserve_cell(grid_pos)
-	global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
+	var weighted_dirs: Array[Vector2i] = []
+	if toward_center_x != 0:
+		for i in int(wx * 2):
+			weighted_dirs.append(Vector2i(toward_center_x, 0))
+	if toward_center_y != 0:
+		for i in int(wy * 2):
+			weighted_dirs.append(Vector2i(0, toward_center_y))
+	weighted_dirs.append(Vector2i(1, 0))
+	weighted_dirs.append(Vector2i(-1, 0))
+	weighted_dirs.append(Vector2i(0, 1))
+	weighted_dirs.append(Vector2i(0, -1))
+
+	weighted_dirs.shuffle()
+
+	for dir in weighted_dirs:
+		var next = grid_pos + dir
+		# 邊界檢查
+		if next.x < -15 or next.x > 39 or next.y < -15 or next.y > 15:
+			continue
+		# 火山不能穿越
+		if _is_volcano(next):
+			continue
+		# 其他怪物佔用
+		if not _is_cell_free(next):
+			continue
+		_release_cell(grid_pos)
+		grid_pos = next
+		_reserve_cell(grid_pos)
+		global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
+		break
+
 	move_cooldown = 1.0 / max(speed, 0.1)
-
 
 # =========================
 # 章魚 MOVE（走到火山射程內就停）
@@ -442,10 +469,12 @@ func _handle_attack(delta):
 			_attack_starfish()
 
 func _attack_jellyfish():
+	# 地塊還在 → 繼續攻擊
 	if EventManager.simple_map_data.has(grid_pos):
 		EventManager.command_damage_land.emit(grid_pos, attack_damage)
 		attack_cooldown = attack_interval
 	else:
+		# 地塊消失 → 回到漂流
 		state = State.SEARCH
 
 func _attack_octopus_ranged():
@@ -479,27 +508,26 @@ func _attack_starfish():
 # =========================
 # 子彈
 # =========================
-# Bullet (在 Monster.gd 內)
 class Bullet extends Node2D:
 	var target_pos: Vector2
 	var damage: int
 	var speed: float = 300.0
 	var owner_monster: Monster = null
-	var owner_generation: int = -1  # 記住發射當下的世代
+	var owner_generation: int = -1
 
 	func initialize(from: Vector2, to: Vector2, dmg: int, owner: Monster):
 		global_position = from
 		target_pos = to
 		damage = dmg
 		owner_monster = owner
-		owner_generation = owner.generation  # 快照當下世代
+		owner_generation = owner.generation
 
 	func _is_owner_alive() -> bool:
 		if not is_instance_valid(owner_monster):
 			return false
 		if not owner_monster.visible:
 			return false
-		return owner_monster.generation == owner_generation  # 世代不符就視為已死
+		return owner_monster.generation == owner_generation
 
 	func _process(delta):
 		if not _is_owner_alive():
