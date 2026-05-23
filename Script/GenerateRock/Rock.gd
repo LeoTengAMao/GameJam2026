@@ -27,9 +27,10 @@ func _on_mouse_entered() -> void:
 
 func _collect() -> void:
 	# 1. 這裡可以處理遊戲邏輯（例如：玩家金幣 + resource_amount）
-	print("成功收集石頭！獲得 ", resource_amount, " 個資源。")
+	#print("成功收集石頭！獲得 ", resource_amount, " 個資源。")
 
 	# 2. 播放收集音效或特效（可選）
 
 	# 3. 發送訊號通知物件池持有人來回收我
 	collected.emit(self)
+	EventManager.stone_collected.emit(1)

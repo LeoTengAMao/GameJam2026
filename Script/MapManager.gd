@@ -95,7 +95,8 @@ func _ready():
 				grid_data[pos] = grid_cell
 			else:
 				# 其他外圍部分是普通土地 (自己就是自己的核心)
-				grid_data[pos] = CellData.new(CellType.LAND, 100)
+				#grid_data[pos] = CellData.new(CellType.LAND, 100)
+				build_land(pos)
 		
 		# 計算並更新海岸線狀態與視覺
 	update_all_coasts()
@@ -150,6 +151,7 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 	# 3. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
 	update_all_coasts()
+	EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 	return true
 
 # 當侵蝕計時器時間到時觸發

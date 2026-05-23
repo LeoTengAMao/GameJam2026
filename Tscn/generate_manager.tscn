@@ -1,30 +1,21 @@
 [gd_scene format=3 uid="uid://ktm38l2gt1kr"]
 
 [ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="1_h0mux"]
-[ext_resource type="Script" uid="uid://dnr71xlnyxe3u" path="res://Script/ClickDetector.gd" id="3_neqe0"]
-[ext_resource type="Script" uid="uid://q5iplkvmdut1" path="res://Script/RockPool.gd" id="4_l0gv1"]
-[ext_resource type="PackedScene" uid="uid://dc2ghlxmfkyk7" path="res://Tscn/rock.tscn" id="5_l0gv1"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_h0mux"]
-radius = 83.0542
+[ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="2_h0mux"]
+[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="3_n4k7n"]
 
 [node name="GenerateManager" type="Node2D" unique_id=845240230]
 
 [node name="GenerateArea" parent="." unique_id=892054703 instance=ExtResource("1_h0mux")]
 position = Vector2(338, 172)
 
+[node name="GenerateArea" parent="GenerateArea" unique_id=603707792 instance=ExtResource("1_h0mux")]
+position = Vector2(-57, 251)
+
 [node name="GenerateArea2" parent="." unique_id=2000305955 instance=ExtResource("1_h0mux")]
 position = Vector2(667, 341)
 
-[node name="ClickDetector" type="Area2D" parent="." unique_id=1711528804 node_paths=PackedStringArray("_rock_pool")]
-script = ExtResource("3_neqe0")
-_rock_pool = NodePath("../RockPool")
+[node name="Timer" parent="." unique_id=992922893 instance=ExtResource("2_h0mux")]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickDetector" unique_id=1967352317]
-position = Vector2(79, 87)
-shape = SubResource("CircleShape2D_h0mux")
-
-[node name="RockPool" type="Node2D" parent="." unique_id=1742573808]
+[node name="RockPool" parent="." unique_id=959581959 instance=ExtResource("3_n4k7n")]
 position = Vector2(-188, -124)
-script = ExtResource("4_l0gv1")
-rock_scene = ExtResource("5_l0gv1")

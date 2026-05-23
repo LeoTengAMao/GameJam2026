@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dc2ghlxmfkyk7"]
 
-[ext_resource type="Script" uid="uid://b1e68cafchwum" path="res://Script/Rock.gd" id="1_phrdy"]
+[ext_resource type="Script" uid="uid://b1e68cafchwum" path="res://Script/GenerateRock/Rock.gd" id="1_phrdy"]
 [ext_resource type="Texture2D" uid="uid://iud5lfp5pv3n" path="res://icon.svg" id="2_phrdy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_phrdy"]

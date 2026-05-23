@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://p6hd7cw4d8xa"]
+
+[ext_resource type="Script" uid="uid://q5iplkvmdut1" path="res://Script/GenerateRock/RockPool.gd" id="1_nsks2"]
+[ext_resource type="PackedScene" uid="uid://dc2ghlxmfkyk7" path="res://Tscn/rock.tscn" id="2_i07yv"]
+
+[node name="RockPool" type="Node2D" unique_id=959581959]
+script = ExtResource("1_nsks2")
+rock_scene = ExtResource("2_i07yv")

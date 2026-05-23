@@ -7,6 +7,8 @@ signal on_cell_hovered(is_hovering: bool, type_name: String, current_hp: int, ma
 # 新增：給隊員接的接口（當玩家收集到石頭時發射）
 signal stone_collected(amount: int)
 
+signal on_create_land(pos: Vector2)
+
 # 新增：當石頭數量改變時，用來通知 UI 更新畫面的訊號
 signal stone_count_changed(new_amount: int)
 
