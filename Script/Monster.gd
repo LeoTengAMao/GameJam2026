@@ -177,6 +177,7 @@ func _handle_attack(delta):
 
 	if EventManager.simple_map_data.has(grid_pos):
 		EventManager.command_damage_land.emit(grid_pos, attack_damage)
+		
 		attack_cooldown = attack_interval
 	else:
 		state = State.SEARCH

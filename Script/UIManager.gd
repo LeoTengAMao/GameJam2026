@@ -47,6 +47,10 @@ func _ready() -> void:
 	EventManager.stone_count_changed.connect(_on_stone_count_changed)
 	EventManager.on_cell_selected.connect(_on_cell_selected)
 	EventManager.close_ui_requested.connect(close_panel)
+	# 綁定：當有人選取格子時，記錄位置並刷新
+	EventManager.on_cell_selected.connect(_on_cell_selected)
+	# 綁定：當數據變更時，檢查是否要刷新
+	EventManager.on_cell_data_changed.connect(_on_cell_data_changed)
 
 	# 初始狀態隱藏
 	tooltip.hide()
@@ -70,9 +74,28 @@ func _on_stone_count_changed(new_amount: int):
 		if btn.has_meta("cost"):
 			btn.disabled = new_amount < btn.get_meta("cost")
 
+var current_viewing_pos: Vector2i = Vector2i(-10000, -10000)
+var current_viewing_type: int = 0 # 紀錄類型，方便之後用
 
+func _on_cell_data_changed(pos: Vector2i, new_data: Dictionary):
+	# 只有當訊號發出的位置，跟我們目前正在看的格子一樣時，才更新
+	if pos == current_viewing_pos:
+		_update_ui_texts(new_data)
+		
+		
+func _update_ui_texts(data: Dictionary):
+	if(data.hp <=0): 
+		close_panel()	
+		return
+	sidebar_hp_label.text = "血量: %d / %d" % [data.hp, data.max_hp]
+	level_label.text = "等級: %d" % data.level
 	
-
+	match data.type:
+		1: name_label.text = "陸地"
+		2: name_label.text = "海岸"
+		3: name_label.text = "火山"
+		4: name_label.text = "海洋之心"
+		
 func _on_hover(is_hovering: bool, type_name: String, current_hp: int, max_hp: int) -> void:
 	is_showing_tooltip = is_hovering
 	if is_hovering:
@@ -84,9 +107,9 @@ func _on_hover(is_hovering: bool, type_name: String, current_hp: int, max_hp: in
 # ==========================================
 # 5. SidePanel 核心動態生成邏輯
 # ==========================================
-func _on_cell_selected(data: Dictionary):
+func _on_cell_selected(pos: Vector2i,data: Dictionary):
 	print("✅ 收到地塊選取，動態生成面板中... 型態: ", data.type)
-	
+	current_viewing_pos = pos  
 	# 更新基礎文字
 	sidebar_hp_label.text = "血量: %d / %d" % [data.hp, data.max_hp]
 	level_label.text = "等級: %d" % data.level

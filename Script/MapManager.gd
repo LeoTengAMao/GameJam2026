@@ -180,7 +180,7 @@ func _refresh_side_panel():
 		"max_hp": target.max_hp,
 		"level": target.level if "level" in target else 1
 	}
-	EventManager.on_cell_selected.emit(info)
+	EventManager.on_cell_selected.emit(current_selected_pos,info)
 
 # 乾淨俐落的造陸函式
 func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
@@ -280,8 +280,16 @@ func damage_land(pos: Vector2i, amount: int):
 		
 	# 扣血
 	target_data.current_hp -= amount
-	print("網格 ", pos, " (", CellType.keys()[data.type] ,") 受到攻擊！ 目前血量: ", target_data.current_hp)
 	
+	var info = {
+		"type": target_data.type,
+		"hp": target_data.current_hp,
+		"max_hp": target_data.max_hp,
+		"level": target_data.level if "level" in target_data else 1
+		}
+	EventManager.on_cell_data_changed.emit(pos, info)
+	
+	print("網格 ", pos, " (", CellType.keys()[data.type] ,") 受到攻擊！ 目前血量: ", target_data.current_hp)
 	# 血量歸零的判定
 	if target_data.current_hp <= 0:
 		if data.type == CellType.VOLCANO:
@@ -337,19 +345,13 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 		
 
 func _unhandled_input(event):
-	# 確保是滑鼠點擊事件，且是「按下」的瞬間
 	if event is InputEventMouseButton and event.pressed:
-		
 		var grid_pos = tilemap.local_to_map(get_global_mouse_position())
 		
-		# === 🟢 情況 A：玩家按下【左鍵】(互動 / 造陸) ===
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if grid_data.has(grid_pos):
-				
-				# 🌟🌟🌟 補上這行：記住玩家選了哪裡！ 🌟🌟🌟
 				current_selected_pos = grid_pos 
 				
-				# 1. 點到了已有的土地或火山 -> 開啟/更新右側升級面板
 				var data = grid_data[grid_pos]
 				var target = data.core_data if data.core_data else data
 				
@@ -359,20 +361,15 @@ func _unhandled_input(event):
 					"max_hp": target.max_hp,
 					"level": target.level if "level" in target else 1
 				}
-				EventManager.on_cell_selected.emit(info)
+				
+				# 🌟 修正：這裡要傳兩個參數 (pos, info)
+				EventManager.on_cell_selected.emit(grid_pos, info)
 				
 			else:
-				# 2. 點到了海洋 -> 執行造陸邏輯！
 				build_land(grid_pos)
-				
 		
-		# === 情況 B：玩家按下【右鍵】(取消 / 關閉面板) ===
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			
-			
 			current_selected_pos = Vector2i(-10000, -10000) 
-			
-			# 廣播：請把 UI 關掉！
 			EventManager.close_ui_requested.emit()
 
 func _is_adjacent_to_land(pos: Vector2i) -> bool:

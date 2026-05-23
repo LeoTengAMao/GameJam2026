@@ -1,0 +1,276 @@
+[gd_scene format=3 uid="uid://bn7b4nsawas1k"]
+
+[ext_resource type="Script" uid="uid://crynuflkrd7j0" path="res://Script/MapManager.gd" id="1_xgl8j"]
+[ext_resource type="Texture2D" uid="uid://b7e3kyp7tcdv8" path="res://Assests/Tile/Yellow-hollow.png" id="2_7e4a0"]
+[ext_resource type="Script" uid="uid://b64spb4whemph" path="res://Script/Camera.gd" id="2_huse1"]
+[ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
+[ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
+[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
+[ext_resource type="Script" uid="uid://c7c3fkxjo7w6u" path="res://Script/GenerateRock/GenerateAreaPool.gd" id="7_huse1"]
+[ext_resource type="PackedScene" uid="uid://buis80p43kt25" path="res://Tscn/generate_area.tscn" id="8_nvhh3"]
+[ext_resource type="Script" uid="uid://b2tha7dub5ovs" path="res://Script/SkillManager.gd" id="9_105op"]
+[ext_resource type="PackedScene" uid="uid://jrq8ojai3yye" path="res://Tscn/EndGameUI.tscn" id="11_nvhh3"]
+[ext_resource type="Shader" uid="uid://wsbnr5jpmsdh" path="res://Assests/Shader/Ocean.gdshader" id="12_bfyrq"]
+[ext_resource type="Script" uid="uid://dnypkcyv7ouxa" path="res://Script/Monster/MonsterPool.gd" id="13_1x38d"]
+[ext_resource type="Script" uid="uid://3fqndhasy1mx" path="res://Script/Monster/MonsterGenerator.gd" id="14_fxjfw"]
+[ext_resource type="PackedScene" uid="uid://c2e7mdk4th0te" path="res://Tscn/Monster.tscn" id="14_mea6k"]
+[ext_resource type="PackedScene" uid="uid://b503cvkerelo2" path="res://Tscn/DebugMenu.tscn" id="16_djb5y"]
+[ext_resource type="Script" uid="uid://b5sumgxy2pibl" path="res://Script/BackgroundController.gd" id="16_erlml"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ba2e8"]
+texture = ExtResource("2_7e4a0")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rgg21"]
+texture = ExtResource("2_rgg21")
+texture_region_size = Vector2i(128, 128)
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+11:0/0 = 0
+12:0/0 = 0
+13:0/0 = 0
+14:0/0 = 0
+15:0/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+8:1/0 = 0
+9:1/0 = 0
+10:1/0 = 0
+11:1/0 = 0
+12:1/0 = 0
+13:1/0 = 0
+14:1/0 = 0
+15:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+7:2/0 = 0
+8:2/0 = 0
+9:2/0 = 0
+10:2/0 = 0
+11:2/0 = 0
+12:2/0 = 0
+13:2/0 = 0
+14:2/0 = 0
+15:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+7:3/0 = 0
+8:3/0 = 0
+9:3/0 = 0
+10:3/0 = 0
+11:3/0 = 0
+12:3/0 = 0
+13:3/0 = 0
+14:3/0 = 0
+15:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+8:4/0 = 0
+9:4/0 = 0
+10:4/0 = 0
+11:4/0 = 0
+12:4/0 = 0
+13:4/0 = 0
+14:4/0 = 0
+15:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+7:5/0 = 0
+8:5/0 = 0
+9:5/0 = 0
+10:5/0 = 0
+11:5/0 = 0
+12:5/0 = 0
+13:5/0 = 0
+14:5/0 = 0
+15:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+5:6/0 = 0
+6:6/0 = 0
+7:6/0 = 0
+8:6/0 = 0
+9:6/0 = 0
+10:6/0 = 0
+11:6/0 = 0
+12:6/0 = 0
+13:6/0 = 0
+14:6/0 = 0
+15:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+8:7/0 = 0
+9:7/0 = 0
+10:7/0 = 0
+11:7/0 = 0
+12:7/0 = 0
+13:7/0 = 0
+14:7/0 = 0
+15:7/0 = 0
+1:0/0 = 0
+0:0/0 = 0
+0:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_7e4a0"]
+tile_size = Vector2i(128, 128)
+sources/1 = SubResource("TileSetAtlasSource_rgg21")
+sources/0 = SubResource("TileSetAtlasSource_ba2e8")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7e4a0"]
+texture = ExtResource("2_7e4a0")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+7:1/0 = 0
+0:2/0 = 0
+7:2/0 = 0
+0:3/0 = 0
+7:3/0 = 0
+0:4/0 = 0
+7:4/0 = 0
+0:5/0 = 0
+7:5/0 = 0
+0:6/0 = 0
+7:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+7:7/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ba2e8"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_7e4a0")
+
+[sub_resource type="PackedScene" id="PackedScene_105op"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bfyrq"]
+noise_type = 2
+frequency = 0.0486
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1x38d"]
+noise = SubResource("FastNoiseLite_bfyrq")
+seamless = true
+seamless_blend_skirt = 0.01
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1x38d"]
+shader = ExtResource("12_bfyrq")
+shader_parameter/noise_tex = SubResource("NoiseTexture2D_1x38d")
+shader_parameter/deep_water = Color(0.078431375, 0.34901962, 0.6, 1)
+shader_parameter/shallow_water = Color(0.14901961, 0.5137255, 0.8, 1)
+shader_parameter/foam_color = Color(0.64705884, 0.9490196, 1, 1)
+shader_parameter/wave_speed = 0.05
+shader_parameter/wave_scale = 1.5
+
+[node name="MapManager" type="Node2D" unique_id=336161256]
+script = ExtResource("1_xgl8j")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=643693630]
+position = Vector2(575, 324)
+zoom = Vector2(0.3, 0.3)
+script = ExtResource("2_huse1")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2068174230]
+tile_set = SubResource("TileSet_7e4a0")
+
+[node name="SelectionLayer" type="TileMapLayer" parent="." unique_id=2087420023]
+tile_set = SubResource("TileSet_ba2e8")
+
+[node name="UI" parent="." unique_id=834032828 instance=ExtResource("3_2m3s5")]
+
+[node name="RockPool" parent="." unique_id=959581959 instance=ExtResource("5_x7wua")]
+
+[node name="RockGenerator" parent="." unique_id=992922893 node_paths=PackedStringArray("rock_pool") instance=ExtResource("6_105op")]
+rock_pool = NodePath("../RockPool")
+
+[node name="AreaPool" type="Node2D" parent="." unique_id=728407797]
+script = ExtResource("7_huse1")
+area_scene = ExtResource("8_nvhh3")
+
+[node name="SkillManager" type="Node2D" parent="." unique_id=612887923]
+script = ExtResource("9_105op")
+CD = SubResource("PackedScene_105op")
+
+[node name="PassiveBuildTimer" type="Timer" parent="SkillManager" unique_id=1521757172]
+
+[node name="EndUI" parent="." unique_id=16656824 instance=ExtResource("11_nvhh3")]
+
+[node name="MonsterPool" type="Node2D" parent="." unique_id=1479358291]
+script = ExtResource("13_1x38d")
+monster_scene = ExtResource("14_mea6k")
+metadata/_custom_type_script = "uid://dnypkcyv7ouxa"
+
+[node name="MonsterGenerator" type="Node" parent="." unique_id=444276619 node_paths=PackedStringArray("monster_pool", "map_manager")]
+script = ExtResource("14_fxjfw")
+monster_pool = NodePath("../MonsterPool")
+map_manager = NodePath("..")
+metadata/_custom_type_script = "uid://3fqndhasy1mx"
+
+[node name="DebugMenu" parent="." unique_id=220269481 instance=ExtResource("16_djb5y")]
+
+[node name="Background" type="CanvasLayer" parent="." unique_id=1591102971]
+layer = -1
+
+[node name="Ocean" type="ColorRect" parent="Background" unique_id=1737348571]
+material = SubResource("ShaderMaterial_1x38d")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("16_erlml")

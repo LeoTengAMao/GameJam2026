@@ -32,7 +32,7 @@ signal command_damage_land(pos: Vector2i, damage_amount: int)
 # 任何系統想強制摧毀某塊地，發射這個訊號
 signal command_destroy_land(pos: Vector2i)
 
-signal on_cell_selected(data: Dictionary)
+signal on_cell_selected(pos: Vector2i,data: Dictionary)
 
 signal close_ui_requested
 
@@ -43,3 +43,6 @@ signal game_over
 # 在 EventManager.gd 中
 var is_gentle_mode: bool = true
 signal settings_changed() # 當玩家切換模式時廣播
+
+# 在 EventManager.gd 中修改：
+signal on_cell_data_changed(pos: Vector2i, new_data: Dictionary)
