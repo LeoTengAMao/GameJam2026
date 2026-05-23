@@ -88,13 +88,6 @@ func _process(delta: float) -> void:
 func _ready():
 	
 	EventManager.upgrade_requested.connect(_on_upgrade_requested)
-	# -------- TEST ---------
-	var monster_scene = preload("res://tscn/Monster.tscn")
-	var monster = monster_scene.instantiate()
-
-	add_child(monster)
-	monster.initialize(Monster.MonsterType.STARFISH, Vector2(-10, 5), 100, 10, 1, 5)
-	# -------- TEST ---------
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
 	# === 🌟 1. 上帝視角：直接生成初始地形 (免扣錢、免檢查) ===
