@@ -2,6 +2,8 @@ extends Node2D
 class_name Monster
 const CELL_SIZE := 128
 
+signal collected
+
 @onready var sprite: Sprite2D = $Sprite2D
 
 enum MonsterType {

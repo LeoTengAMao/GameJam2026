@@ -93,7 +93,7 @@ func _ready():
 	var monster = monster_scene.instantiate()
 
 	add_child(monster)
-	monster.initialize(Monster.MonsterType.STARFISH, Vector2(0, 0), 100, 1, 1)
+	monster.initialize(Monster.MonsterType.STARFISH, Vector2i(0, 0), 100, 1, 1)
 	# -------- TEST ---------
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
 	
@@ -408,3 +408,34 @@ func check_ocean_heart_surrounded():
 		print("⚠️ 封印破裂！海洋之心的包圍網被破壞了！")
 		
 	EventManager.is_heart_surrounded = surrounded
+	
+func get_ocean_side_land_position() -> Vector2:
+	var valid_ocean_positions: Array[Vector2i] = []
+	
+	# 1. 遍歷地圖，找出所有「海岸」格子
+	for pos in grid_data.keys():
+		var cell = grid_data[pos]
+		
+		if cell.type == CellType.COAST:
+			# 2. 檢查這格海岸的四周，找出哪幾格是海洋
+			for dir in NEIGHBORS:
+				var neighbor_pos = pos + dir
+				
+				# 如果鄰居格子不存在於字典，或是狀態為 SEA，那它就是我們要的「邊緣海洋」
+				if grid_data.get(neighbor_pos) == null or grid_data[neighbor_pos].type == CellType.SEA:
+					# 避免重複加入相同的海洋格子
+					if (grid_data.get(neighbor_pos) != null): print(grid_data[neighbor_pos].type)
+					else: print(neighbor_pos)
+					if not valid_ocean_positions.has(neighbor_pos):
+						valid_ocean_positions.append(neighbor_pos)
+	
+	# 3. 安全檢查：防呆機制
+	if valid_ocean_positions.is_empty():
+		print("⚠️ 找不到任何與海岸相鄰的海洋格子！")
+		return Vector2(0, 0)
+		
+	# 4. 隨機挑選一格「真正的海洋網格」
+	var random_grid_pos = valid_ocean_positions.pick_random()
+	print("random", random_grid_pos)
+	
+	return random_grid_pos
