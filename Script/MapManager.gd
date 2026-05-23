@@ -113,16 +113,21 @@ func _ready():
 	
 	add_child(erosion_timer) # 把計時器加入場景樹中
 	print("🌊 海洋侵蝕機制已啟動！")
-# 玩家呼叫此函式來填海造陸
-func build_land(pos: Vector2i, starting_hp: int = 100):
+var land_build_cost: int = 5 # MapManager 只需記錄「造陸的標價」
+
+# 乾淨俐落的造陸函式
+func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
+	# 1. 檢查這格是不是已經有土地
 	if grid_data.has(pos) and grid_data[pos].type != CellType.SEA:
 		print("這裡已經有土地了！")
 		return false
 		
-	# 1. 邏輯層：新增土地資料
+	# 2. 🌟 向資源銀行申請扣款
+	if not ResourceManager.spend_stones(land_build_cost):
+		return false # 銀行回傳 false (錢不夠)，造陸直接失敗終止
+		
+	# 3. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
-	
-	# 2. 更新周圍所有格子的海岸線狀態
 	update_all_coasts()
 	return true
 

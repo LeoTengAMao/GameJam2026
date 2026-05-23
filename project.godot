@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 EventManager="*uid://vygbog5dhl4q"
 GenerateManager="*uid://l8o2rec6pmbl"
+ResourceManager="*uid://sracwmvu4y58"
 
 [display]
 
