@@ -15,6 +15,7 @@ const TILE_SIZE: float = 128.0
 @export var min_zoom: float = 0.2         # 🔍 縮放上限：拉到最遠 (畫面變小，看大局，最小設為 0.5 倍)
 @export var max_zoom: float = 1.0         # 🔍 縮放下限：拉到最近 (畫面變大，看細節，最大設為 2.0 倍)
 
+var is_mouse_scrolling_enabled: bool = true  # 預設開啟
 var target_zoom: float = 0.3              # 目標縮放值 (滾輪滾動時改變它)
 
 # 儲存計算完的像素極限值，用來防止座標溢出
@@ -64,16 +65,16 @@ func _physics_process(delta: float) -> void:
 	# 🔵 2. 滑鼠邊緣偵測
 	var mouse_pos = get_viewport().get_mouse_position()
 	var screen_size = get_viewport().get_visible_rect().size
-	
-	if mouse_pos.x >= screen_size.x - margin_trigger:
-		move_vec.x += 1
-	elif mouse_pos.x <= margin_trigger:
-		move_vec.x -= 1
-		
-	if mouse_pos.y >= screen_size.y - margin_trigger:
-		move_vec.y += 1
-	elif mouse_pos.y <= margin_trigger:
-		move_vec.y -= 1
+	if EventManager.mousecam == true:
+		if mouse_pos.x >= screen_size.x - margin_trigger:
+			move_vec.x += 1
+		elif mouse_pos.x <= margin_trigger:
+			move_vec.x -= 1
+			
+		if mouse_pos.y >= screen_size.y - margin_trigger:
+			move_vec.y += 1
+		elif mouse_pos.y <= margin_trigger:
+			move_vec.y -= 1
 		
 	# 🟡 3. 執行移動
 	if move_vec != Vector2.ZERO:

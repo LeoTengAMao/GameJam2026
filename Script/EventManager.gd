@@ -41,7 +41,8 @@ signal game_won
 signal game_over
 
 # 在 EventManager.gd 中
-var is_gentle_mode: bool = true
+var mousecam: bool = false
+var is_gentle_mode: bool = false
 signal settings_changed() # 當玩家切換模式時廣播
 
 # 在 EventManager.gd 中修改：
