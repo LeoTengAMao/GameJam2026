@@ -3,6 +3,19 @@ class_name MapManager
 
 enum CellType { SEA, LAND, COAST, VOLCANO, OCEAN_HEART }
 const TILE_SOURCE_ID = 5 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
+@onready var corner_overlay: TileMapLayer = $CornerOverlay # 🌟 抓住新層
+@onready var overlay_tl: TileMapLayer = $Overlay_TL
+@onready var overlay_tr: TileMapLayer = $Overlay_TR
+@onready var overlay_bl: TileMapLayer = $Overlay_BL
+@onready var overlay_br: TileMapLayer = $Overlay_BR
+
+# 權重定義：左上=1, 右上=2, 左下=4, 右下=8
+const CORNER_DIRECTIONS = {
+	"TL": Vector2i(-1, -1),
+	"TR": Vector2i(1, -1),
+	"BL": Vector2i(-1, 1),
+	"BR": Vector2i(1, 1)
+}
 
 var ocean_heart_rect: Rect2i
 class CellData:
@@ -23,8 +36,11 @@ class CellData:
 var grid_data: Dictionary = {}
 const NEIGHBORS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
+
 @onready var tilemap: TileMapLayer = $TileMapLayer
 @onready var selection_tilemap: TileMapLayer = $SelectionLayer
+
+
 
 var last_hovered_pos: Vector2i = Vector2i(-10000, -10000)
 var current_selected_pos: Vector2i = Vector2i(-10000, -10000)
@@ -287,13 +303,33 @@ func _get_land_mask(pos: Vector2i) -> int:
 	if _is_solid(pos + Vector2i.DOWN): mask += 4
 	if _is_solid(pos + Vector2i.LEFT): mask += 8
 	return mask
-
+	
 func _is_solid(pos: Vector2i) -> bool:
 	if not grid_data.has(pos): return false
 	var t = grid_data[pos].type
 	return t == CellType.LAND or t == CellType.COAST or t == CellType.VOLCANO or t == CellType.OCEAN_HEART
 
+func _get_corner_mask(pos: Vector2i) -> int:
+	var mask = 0
+	# 🌟 注意：只有當「四周都是實心」時，才需要檢查角落缺口
+	#TL (1)
+	if not _is_solid(pos + CORNER_DIRECTIONS["TL"]): mask += 1
+	#TR (2)
+	if not _is_solid(pos + CORNER_DIRECTIONS["TR"]): mask += 2
+	#BL (4)
+	if not _is_solid(pos + CORNER_DIRECTIONS["BL"]): mask += 4
+	#BR (8)
+	if not _is_solid(pos + CORNER_DIRECTIONS["BR"]): mask += 8
+	return mask
+
 func _set_visual_tile(pos: Vector2i, type: CellType):
+	overlay_tl.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_tr.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_bl.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_br.set_cell(pos, -1, Vector2i(-1, -1))
+	tilemap.set_cell(pos, -1, Vector2i(-1, -1))
+	#overlay_tl.set_cell(pos, 0, Vector2i(0, 0))
+	
 	if type == CellType.SEA:
 		tilemap.set_cell(pos, -1, Vector2i(-1, -1))
 		return
@@ -316,7 +352,25 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 			# 原本的 Bitmask 邏輯保持不變
 			var mask = _get_land_mask(pos)
 			var atlas_coord = Vector2i(mask % 4, mask / 4)
-			tilemap.set_cell(pos, TILE_SOURCE_ID, atlas_coord)
+			tilemap.set_cell(pos, 6, atlas_coord)
+			
+			if mask == 15:
+				
+				var corner_mask = _get_corner_mask(pos)
+				
+				# 假設轉角圖塊所在的 ID 是 2 (請根據你實際的 TileSet 調整)
+				var CORNER_ID = 0
+				
+				# 每個角獨立判斷，獨立畫在專屬的透明圖層上
+				if corner_mask & 1: 
+					overlay_tl.set_cell(pos, CORNER_ID, Vector2i(0, 0))
+				if corner_mask & 2: 
+					overlay_tr.set_cell(pos, CORNER_ID, Vector2i(1, 0))
+				if corner_mask & 4: 
+					overlay_bl.set_cell(pos, CORNER_ID, Vector2i(0, 1))
+				if corner_mask & 8: 
+					overlay_br.set_cell(pos, CORNER_ID, Vector2i(1, 1))
+		
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		var grid_pos = tilemap.local_to_map(get_global_mouse_position())
