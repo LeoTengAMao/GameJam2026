@@ -94,8 +94,6 @@ func _ready():
 				grid_cell.core_data = volcano_core # 建立連結！
 				grid_data[pos] = grid_cell
 			else:
-				# 其他外圍部分是普通土地 (自己就是自己的核心)
-				#grid_data[pos] = CellData.new(CellType.LAND, 100)
 				build_land(pos)
 		
 		# 計算並更新海岸線狀態與視覺
@@ -116,6 +114,10 @@ func _ready():
 	print("🌊 海洋侵蝕機制已啟動！")
 	# 🔌 監聽升級請求
 	EventManager.upgrade_requested.connect(_on_upgrade_requested)
+	# 🔌 監聽外部傳來的「破壞指令」，並綁定到 MapManager 自己的函式
+	EventManager.command_damage_land.connect(damage_land)
+	# 如果你有寫 _destroy_land，也可以這樣接：
+	EventManager.command_destroy_land.connect(_destroy_land)
 	
 func _on_upgrade_requested(type: String):
 	if type == "volcano":
@@ -150,6 +152,7 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 		
 	# 3. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
+	EventManager.simple_map_data[pos] = "LAND"
 	update_all_coasts()
 	EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 	return true
@@ -188,9 +191,11 @@ func update_all_coasts():
 		if data.type == CellType.LAND or data.type == CellType.COAST:
 			if _is_adjacent_to_sea(pos):
 				data.type = CellType.COAST
+				EventManager.simple_map_data[pos] = "COAST"
 				_set_visual_tile(pos, CellType.COAST)
 			else:
 				data.type = CellType.LAND
+				EventManager.simple_map_data[pos] = "LAND"
 				_set_visual_tile(pos, CellType.LAND)
 
 # 檢查某座標的上下左右是否有海洋 (或者沒有資料＝海洋)
@@ -235,6 +240,7 @@ func _destroy_volcano():
 	for pos in grid_data.keys():
 		if grid_data[pos].type == CellType.VOLCANO:
 			positions_to_erase.append(pos)
+			EventManager.simple_map_data.erase(pos)
 			
 	for pos in positions_to_erase:
 		grid_data.erase(pos)
@@ -247,7 +253,7 @@ func _destroy_volcano():
 func _destroy_land(pos: Vector2i):
 	# 1. 將該網格狀態改回海洋 (從字典移除，或設為 SEA)
 	grid_data.erase(pos) 
-	
+	EventManager.simple_map_data.erase(pos)
 	# 2. 視覺上清除該圖塊 (例如設為 -1 表示清空)
 	tilemap.set_cell(pos, -1, Vector2i(-1, -1))
 	

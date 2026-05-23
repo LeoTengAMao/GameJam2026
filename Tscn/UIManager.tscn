@@ -7,6 +7,25 @@
 [node name="CanvasLayer" type="CanvasLayer" unique_id=834032828]
 script = ExtResource("1_2gmx0")
 
+[node name="SidePanel" type="PanelContainer" parent="." unique_id=1408331766]
+custom_minimum_size = Vector2(300, 0)
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+size_flags_horizontal = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel" unique_id=731220807]
+layout_mode = 2
+
+[node name="SidebarHPLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=179259485]
+layout_mode = 2
+
+[node name="VolcanoLevelLabel" type="Label" parent="SidePanel/VBoxContainer" unique_id=458491824]
+layout_mode = 2
+
 [node name="HUD" type="Control" parent="." unique_id=1298107530]
 layout_mode = 3
 anchor_right = 1.0

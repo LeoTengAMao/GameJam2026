@@ -17,3 +17,17 @@ signal upgrade_requested(type: String)
 
 # 新增：當升級成功後，通知大家目前的等級與數值
 signal volcano_upgraded(level: int, current_hp: int, max_hp: int)
+
+# 建立一個公開的精簡版地圖，格式為 { Vector2i(x,y) : "LAND" }
+var simple_map_data: Dictionary = {}
+
+# 參數只傳座標跟字串
+signal land_updated(pos: Vector2i, type_name: String)
+
+# 任何系統想對土地造成傷害，發射這個訊號
+signal command_damage_land(pos: Vector2i, damage_amount: int)
+
+# 任何系統想強制摧毀某塊地，發射這個訊號
+signal command_destroy_land(pos: Vector2i)
+
+signal on_cell_selected(data: Dictionary)
