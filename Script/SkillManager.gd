@@ -3,7 +3,7 @@ class_name SkillManager
 
 # 抓住爸爸 (MapManager) 以便讀取地圖資料
 @onready var map: MapManager = get_parent()
-
+@export var CD : PackedScene
 
 func _ready():
 	# 由 SkillManager 來監聽升級訊號，分擔 MapManager 的工作
@@ -27,6 +27,10 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 				
 		elif upgrade_id == "prod_speed" and ResourceManager.spend_stones(50):
 			volcano_core.level += 1 
+			
+			# 🌟 火山核心資料庫升級完後，立刻廣播！(把新等級、新血量傳出去)
+			EventManager.volcano_upgraded.emit(volcano_core.level, volcano_core.current_hp, volcano_core.max_hp)
+			
 			print("🌋 產石等級提升至 ", volcano_core.level)
 			
 		# 呼叫爸爸的函式更新 UI

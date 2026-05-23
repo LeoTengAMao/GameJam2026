@@ -188,6 +188,8 @@ texture_region_size = Vector2i(128, 128)
 tile_size = Vector2i(128, 128)
 sources/0 = SubResource("TileSetAtlasSource_7e4a0")
 
+[sub_resource type="PackedScene" id="PackedScene_105op"]
+
 [node name="MapManager" type="Node2D" unique_id=336161256]
 script = ExtResource("1_xgl8j")
 
@@ -218,3 +220,4 @@ area_scene = ExtResource("8_nvhh3")
 
 [node name="SkillManager" type="Node2D" parent="." unique_id=612887923]
 script = ExtResource("9_105op")
+CD = SubResource("PackedScene_105op")
