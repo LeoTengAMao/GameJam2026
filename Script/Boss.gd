@@ -360,7 +360,7 @@ func _enter_protect_mode():
 	
 	# 🌟 使用 Tween 讓護盾「淡入」 (0.5秒)
 	var tween_in = create_tween()
-	tween_in.tween_property(shield, "modulate:a", 1.0, 0.5)
+	tween_in.tween_property(shield, "modulate:a", 0.5, 0)
 	
 	sprite.modulate = Color(0.3, 0.5, 1.0)
 	print("🛡️ Boss 進入保護階段！")
