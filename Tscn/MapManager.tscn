@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://6kycchqdqhc5" path="res://Tscn/Monster.tscn" id="14_mea6k"]
 [ext_resource type="PackedScene" uid="uid://b503cvkerelo2" path="res://Tscn/DebugMenu.tscn" id="16_djb5y"]
 [ext_resource type="Script" uid="uid://b5sumgxy2pibl" path="res://Script/BackgroundController.gd" id="16_erlml"]
+[ext_resource type="Script" uid="uid://clmwdgoli04oq" path="res://Script/phase.gd" id="24_b5v2i"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0x2nf"]
 texture = ExtResource("10_kkvg3")
@@ -411,7 +412,9 @@ metadata/_custom_type_script = "uid://dnypkcyv7ouxa"
 
 [node name="MonsterGenerator" type="Node" parent="." unique_id=444276619 node_paths=PackedStringArray("monster_pool", "map_manager")]
 script = ExtResource("14_fxjfw")
-spawn_interval = null
+jellyfishWeight = 10
+starfishWeight = 5
+octopusWeight = 5
 monster_pool = NodePath("../MonsterPool")
 map_manager = NodePath("..")
 metadata/_custom_type_script = "uid://3fqndhasy1mx"
@@ -430,3 +433,9 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("16_erlml")
+
+[node name="Node" type="Node" parent="." unique_id=191327838]
+script = ExtResource("24_b5v2i")
+phase1_time = 5000
+phase2_time = 10000
+phase3_time = 15000

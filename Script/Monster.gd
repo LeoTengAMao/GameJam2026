@@ -128,7 +128,18 @@ func initialize(monster_type: MonsterType, pos: Vector2i, hp_value: int, atk: in
 	add_to_group("monsters")
 	_reserve_cell(grid_pos)
 	generation += 1
+	
+	if is_node_ready(): 
+		_update_visuals()
+	else:
+		ready.connect(_update_visuals, CONNECT_ONE_SHOT)
+		
 	on_generate.emit()
+
+func _update_visuals() -> void:
+	if sprite:
+		sprite.play(animation_map[type])
+		sprite.scale = scale_map[type]
 
 func _exit_tree():
 	_release_cell(grid_pos)
