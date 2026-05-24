@@ -29,17 +29,31 @@ func _init(factory_method: Callable, on_get: Callable = Callable(), on_return: C
 
 # 借出一個物件
 func get_item() -> Variant:
-	var item: Variant
-	if _pool.size() > 0:
-		item = _pool.pop_back() # 從陣列尾端拿，效率最高
-	else:
-		if _limit > 0 and _total > _limit: return
+	var item: Variant = null
+	
+	# 1. 循環嘗試直到取出一個有效的物件，或者池空了
+	while _pool.size() > 0:
+		var candidate = _pool.pop_back()
+		if is_instance_valid(candidate):
+			item = candidate
+			break
+		else:
+			# 遇到無效物件，直接忽略並繼續迴圈找下一個
+			_total -= 1 # 這邊要減回去，因為有一個物件無效了
+			continue
+	
+	# 2. 如果池裡沒有有效的物件，則從工廠生成
+	if item == null:
+		if _limit > 0 and _total >= _limit: 
+			return null
 		item = _factory_method.call()
-		_total += 1;
+		_total += 1
 		print("total: ", _total)
 		
-	if not _on_get.is_null():
+	# 3. 只有在確定 item 有效時才執行回呼
+	if item != null and not _on_get.is_null():
 		_on_get.call(item)
+		
 	return item
 
 # 歸還一個物件
