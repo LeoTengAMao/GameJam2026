@@ -237,9 +237,9 @@ func _find_best_volcano_adjacent() -> Vector2i:
 	return best
 
 # =========================
-# A* 路徑
+# A* 路徑（移除 occupied 陣列，改用全域字典 $O(1)$ 查詢）
 # =========================
-func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2i]:
+func _find_path_to(t: Vector2i) -> Array[Vector2i]:
 	var open_set: Array[Vector2i] = [grid_pos]
 	var came_from: Dictionary = {}
 	var g_score: Dictionary = { grid_pos: 0.0 }
@@ -266,8 +266,13 @@ func _find_path_to(t: Vector2i, occupied: Array[Vector2i] = []) -> Array[Vector2
 			var next = current + dir
 			if _is_volcano(next) and next != t:
 				continue
-			if next != t and next in occupied:
-				continue
+				
+			# 🎯 核心優化：不要用迴圈陣列檢查！直接用 .has() 查詢全域靜態字典
+			if next != t and Monster.reserved_cells.has(next):
+				# 如果該格子登記的主人不是自己，那就代表它是障礙物，繞道！
+				if Monster.reserved_cells[next] != self:
+					continue
+					
 			if abs(next.x) > 50 or abs(next.y) > 50:
 				continue
 
@@ -392,9 +397,10 @@ func _handle_move_jellyfish(delta):
 	move_cooldown = 1.0 / max(speed, 0.1)
 
 # =========================
-# 章魚 MOVE（走到火山射程內就停）
+# 章魚 MOVE（走到火山射程內就停）- 優化節流版
 # =========================
 func _handle_move_octopus(delta):
+	# 1. 檢查是否已經有火山在射程內了，有的話立刻轉成攻擊，不用移動
 	var in_range_target = _find_volcano_in_range(OCTOPUS_RANGE)
 	if in_range_target != INVALID_TARGET:
 		target = in_range_target
@@ -403,34 +409,48 @@ func _handle_move_octopus(delta):
 		attack_cooldown = 0.0
 		return
 
+	# 2. 移動冷卻計時
+	move_cooldown -= delta
+	if move_cooldown > 0:
+		return
+
+	# 3. 確保有目標火山
 	target = _find_nearest_volcano()
 	if target == INVALID_TARGET:
 		state = State.SEARCH
 		return
 
-	move_cooldown -= delta
-	if move_cooldown > 0:
-		return
-
-	var occupied = _get_occupied_cells()
-	path = _find_path_to(target, occupied)
-
+	# 🎯 最佳化 A：如果路徑是空的，才需要重新計算 A*（不需要每一步都重算）
 	if path.is_empty():
-		return
+		path = _find_path_to(target) # 拿掉 occupied 參數，改去內部查全域字典
+		
+		# 防呆：如果真的完全找不到路（例如路被填滿了），強迫休息一下再搜尋，避免死循環卡死 CPU
+		if path.is_empty():
+			move_cooldown = 0.5 
+			return
 
+	# 4. 準備跨出下一步
 	var next_step = path.front()
+	
+	# 🎯 最佳化 B：防重疊檢查，直接查靜態字典（原本的 _is_cell_free 已經有查了）
 	if not _is_cell_free(next_step):
+		# 如果下一步突然被其他怪物捷足先登了，這一幀先停下不走，下一幀再重新評估
 		return
 
+	# 5. 安全步進更新
 	_release_cell(grid_pos)
 	path.pop_front()
 	grid_pos = next_step
 	_reserve_cell(grid_pos)
+	
+	# 同步世界座標
 	global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
+	
+	# 重設移動冷卻
 	move_cooldown = 1.0 / max(speed, 0.1)
 
 # =========================
-# 海星 MOVE
+# 海星 MOVE - 修正優化版（繞路型）
 # =========================
 func _handle_move_starfish(delta):
 	if _is_adjacent_to_volcano(grid_pos):
@@ -439,38 +459,37 @@ func _handle_move_starfish(delta):
 		attack_cooldown = 0.0
 		return
 
-	var occupied = _get_occupied_cells()
-
-	if target == INVALID_TARGET or target in occupied:
-		target = _find_best_volcano_adjacent()
-
-	if target == INVALID_TARGET:
-		return
-
-	if grid_pos == target:
-		path = []
-		state = State.ATTACK
-		attack_cooldown = 0.0
-		return
-
 	move_cooldown -= delta
 	if move_cooldown > 0:
 		return
 
-	path = _find_path_to(target, occupied)
-
+	# 如果路徑空了，重新尋找目標並計算 A*
 	if path.is_empty():
-		state = State.SEARCH
-		return
+		target = _find_best_volcano_adjacent()
+		if target == INVALID_TARGET:
+			return
+		path = _find_path_to(target) # 已套用上一題的優化版（直查全域字典）
+		
+		if path.is_empty():
+			state = State.SEARCH
+			move_cooldown = 0.5 # 找不到路時強制休息，防 CPU 燒壞
+			return
 
+	# 檢查下一步
 	var next_step = path.front()
+	
+	# 🎯 修正核心：如果下一步被其他怪物擋住了！
 	if not _is_cell_free(next_step):
+		path.clear() # 💥 立刻清空路徑！逼它在下一影格重新算一條「繞開擋路者」的新路
+		move_cooldown = 0.2 # 稍微等待 0.2 秒再動，給前方怪物一點走開的時間，避免每幀狂算 A*
 		return
 
+	# 順利通行
 	_release_cell(grid_pos)
 	path.pop_front()
 	grid_pos = next_step
 	_reserve_cell(grid_pos)
+	
 	global_position = Vector2(grid_pos) * CELL_SIZE + ORIGIN_OFFSET
 	move_cooldown = 1.0 / max(speed, 0.1)
 
