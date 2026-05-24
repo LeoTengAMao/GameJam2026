@@ -1,7 +1,7 @@
 extends CanvasLayer
 class_name PauseMenu
 
-@export var title_scene_path: String = "res://Scenes/Title.tscn"
+@export var title_scene_path: String = "res://Tscn/menu.tscn"
 
 @onready var music_slider: HSlider = $Panel/VBox/MusicRow/MusicSlider
 @onready var sfx_slider: HSlider = $Panel/VBox/SFXRow/SFXSlider
@@ -10,8 +10,8 @@ class_name PauseMenu
 func _ready() -> void:
 	hide()
 	music_slider.min_value = -60.0
-	music_slider.max_value = -10.0
-	EventManager.music_db = -25.0
+	music_slider.max_value = 0.0
+	EventManager.music_db = -10.0
 	music_slider.value = EventManager.music_db
 	AudioServer.set_bus_volume_db(0, EventManager.music_db)
 

@@ -1,6 +1,6 @@
 extends Node
 
-var music_db: float = -25.0
+var music_db: float = -10.0
 var sfx_db: float = 0.0
 
 # 定義 UI 專用訊號：當滑鼠懸停的地塊改變時發射
