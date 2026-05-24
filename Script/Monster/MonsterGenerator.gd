@@ -7,10 +7,9 @@ class_name MonsterGenerator
 @export var jellyfishWeight : int
 @export var starfishWeight : int
 @export var octopusWeight : int
-
+@export var boss_scene: PackedScene
 ## 拖入你的 RockPool 節點 (型態為 Node 或特定類別)
 @export var monster_pool: MonsterPool
-
 @export var map_manager: Node
 
 var time_accumulator: float = 0.0
@@ -20,11 +19,30 @@ func _ready() -> void:
 
 var rocks: Dictionary = {}
 
+var has_spawned_boss: bool = false
+
+
+const BOSS_SCENE = preload("res://Tscn/Boss.tscn")
+
+func spawn_boss():
+	print("⚠️ 警告！巨型 Boss 出現了！")
+	var boss_instance = BOSS_SCENE.instantiate()
+	add_child(boss_instance) # 必須先加入場景
+	
+	# 決定 Boss 出生的位置 (例如在遠處的海上)
+	var spawn_pos = Vector2i(15, -15) 
+	boss_instance.initialize(spawn_pos)
+
 func _process(delta: float) -> void:
 	time_accumulator += delta
 	if time_accumulator >= spawn_interval:
 		time_accumulator -= spawn_interval
 		_on_timer_tick()
+	
+	# 🌟 簡單觸發邏輯：如果遊戲時間達到 60 秒，召喚 Boss (只召喚一次)
+		if map_manager.elapsed_time > 1.0 and not has_spawned_boss:		
+			spawn_boss()
+			has_spawned_boss = true
 
 
 func _on_timer_tick() -> void:

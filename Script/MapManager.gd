@@ -81,6 +81,9 @@ func _process(delta: float) -> void:
 		
 	var monsters = get_tree().get_nodes_in_group("monsters")
 	
+	# 🌟 新增：把 bosses 也抓出來，合併成一個攻擊目標清單
+	var bosses = get_tree().get_nodes_in_group("bosses")
+	var all_targets = monsters + bosses # 合併兩個陣列
 	for pos in grid_data.keys():
 		var data: CellData = grid_data[pos]
 		
@@ -94,7 +97,7 @@ func _process(delta: float) -> void:
 				var best_dist = INF
 				
 				# 尋找射程內最近的怪物
-				for m in monsters:
+				for m in all_targets:
 					# 🌟 換成這個最安全的寫法：如果怪物是空的、準備被刪除、或已經死了，就跳過
 					if m == null or m.is_queued_for_deletion() or m.hp <= 0: 
 						continue

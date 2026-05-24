@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://c5g28p81hnshx"]
+
+[ext_resource type="Script" uid="uid://cppmvg41yfto5" path="res://Script/Boss.gd" id="1_x8wxl"]
+[ext_resource type="Texture2D" uid="uid://d0shwnglp05t7" path="res://Assests/Sprites/Boss-Photoroom.png" id="2_6b2ah"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5emqy"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(26, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jvmyf"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(152, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_khfgu"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(278, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nh5o5"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(404, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0pg7p"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(530, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_you3k"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(656, 236, 126, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ccfo"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(26, 10, 124, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3q6u7"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(150, 10, 124, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t0atl"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(274, 10, 124, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_67v0r"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(398, 10, 124, 113)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iocsm"]
+atlas = ExtResource("2_6b2ah")
+region = Rect2(522, 10, 124, 113)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_w4ry1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5emqy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jvmyf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_khfgu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nh5o5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0pg7p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_you3k")
+}],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3ccfo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3q6u7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t0atl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_67v0r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iocsm")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[node name="Boss" type="Node2D" unique_id=1720499287 groups=["bosses"]]
+script = ExtResource("1_x8wxl")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=800669110]
+sprite_frames = SubResource("SpriteFrames_w4ry1")
+animation = &"idle"
+autoplay = "idle"

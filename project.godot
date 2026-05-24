@@ -36,6 +36,7 @@ project/assembly_name="GameJam2026"
 
 MapCamara=""
 monsters=""
+bosses=""
 
 [input]
 
