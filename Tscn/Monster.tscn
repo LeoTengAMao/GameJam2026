@@ -1,7 +1,104 @@
 [gd_scene format=3 uid="uid://6kycchqdqhc5"]
 
 [ext_resource type="Script" uid="uid://c5fs3s646vw32" path="res://Script/Monster.gd" id="1_0y0td"]
+[ext_resource type="Texture2D" uid="uid://c8xaw0yo1spc6" path="res://Assests/Monster/Jellyfish Sprite Sheet.png" id="2_7mle0"]
 [ext_resource type="Script" path="res://Script/ClickMonster.gd" id="2_ise3q"]
+[ext_resource type="Texture2D" uid="uid://2sfb072pe30h" path="res://Assests/Monster/oct.png" id="3_0ld11"]
+[ext_resource type="Texture2D" uid="uid://cjouitaise0mq" path="res://Assests/Monster/star.png" id="4_vpr54"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ft4o"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(0, 0, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2lqck"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(32, 0, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cvq36"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(64, 0, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ae5s"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(96, 0, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gjhvb"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(128, 0, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_geaxq"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(0, 31, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_74egx"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(32, 31, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6vqy5"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(64, 31, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w7c54"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(96, 31, 32, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yvj80"]
+atlas = ExtResource("2_7mle0")
+region = Rect2(128, 31, 32, 31)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_msxlp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ft4o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2lqck")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cvq36")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7ae5s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gjhvb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_geaxq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_74egx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6vqy5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w7c54")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yvj80")
+}],
+"loop": true,
+"name": &"jellyfish",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_0ld11")
+}],
+"loop": true,
+"name": &"octopus",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_vpr54")
+}],
+"loop": true,
+"name": &"starfish",
+"speed": 5.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ise3q"]
 size = Vector2(128, 128)
@@ -9,7 +106,10 @@ size = Vector2(128, 128)
 [node name="Monster" type="Node2D" unique_id=729395458 groups=["monsters"]]
 script = ExtResource("1_0y0td")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1692963647]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2854476]
+sprite_frames = SubResource("SpriteFrames_msxlp")
+animation = &"jellyfish"
+autoplay = "jellyfish"
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1510724894 node_paths=PackedStringArray("monster")]
 script = ExtResource("2_ise3q")

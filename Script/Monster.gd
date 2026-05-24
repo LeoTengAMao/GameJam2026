@@ -6,7 +6,7 @@ const ORIGIN_OFFSET := Vector2(64, 64)
 const INVALID_TARGET := Vector2i(-999, -999)
 const OCTOPUS_RANGE := 5
 const SEARCH_INTERVAL := 0.5  # 每 0.5 秒才重新找目標一次
-
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 var generation: int = 0
 
 # 火山（中間四格）
@@ -14,6 +14,12 @@ const VOLCANO_CELLS := [
 	Vector2i(0, 0), Vector2i(1, 0),
 	Vector2i(0, 1), Vector2i(1, 1)
 ]
+
+var scale_map = {
+	MonsterType.JELLYFISH: Vector2(5.0, 5.0),
+	MonsterType.OCTOPUS: Vector2(1.0, 1.0),   # adjust these values
+	MonsterType.STARFISH: Vector2(1.0, 1.0)
+}
 
 # 海洋之心（不攻擊，但可穿越）
 const OCEAN_HEART_CELLS := [
@@ -25,12 +31,16 @@ const OCEAN_HEART_CELLS := [
 signal collected
 signal on_generate
 
-@onready var sprite: Sprite2D = $Sprite2D
 
 # =========================
 # 全局佔位管理
 # =========================
 static var reserved_cells: Dictionary = {}
+
+func _ready():
+	# 這裡保證 sprite 絕對已經準備好了！
+	sprite.play(animation_map[type])
+	sprite.scale = scale_map[type]
 
 func _reserve_cell(pos: Vector2i):
 	reserved_cells[pos] = self
@@ -53,10 +63,11 @@ enum MonsterType {
 	STARFISH
 }
 var type: MonsterType
-var texture_map = {
-	MonsterType.JELLYFISH: preload("res://Assests/Monster/jellyfish.png"),
-	MonsterType.OCTOPUS:   preload("res://Assests/Monster/oct.png"),
-	MonsterType.STARFISH:  preload("res://Assests/Monster/star.png")
+
+var animation_map = {
+	MonsterType.JELLYFISH: "jellyfish",
+	MonsterType.OCTOPUS: "octopus",
+	MonsterType.STARFISH: "starfish"
 }
 
 # =========================
@@ -100,7 +111,6 @@ var attack_interval: float
 # =========================
 func initialize(monster_type: MonsterType, pos: Vector2i, hp_value: int, atk: int, spd: float, atk_speed: float):
 	type = monster_type
-	sprite.texture = texture_map[type]
 	hp = hp_value
 	attack_damage = atk
 	speed = spd

@@ -41,7 +41,7 @@ func spawn_monster_by_grid_pos(position: Vector2) -> void:
 func pick_random_monster(position: Vector2) -> void:
 	var monster = _monster_pool.get_item() as Monster
 	
-	var hp_value = 1
+	var hp_value = 10
 	var atk = 1
 	var spd = 1
 	var atk_spd = 1
