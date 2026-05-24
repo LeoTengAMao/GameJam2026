@@ -153,6 +153,7 @@ func _handle_attack(delta):
 
 	# Random land destruction
 	land_attack_cooldown -= delta
+	print("boss 對 land 攻擊了")
 	if land_attack_cooldown <= 0:
 		_do_land_attack()
 		land_attack_cooldown = LAND_ATTACK_INTERVAL

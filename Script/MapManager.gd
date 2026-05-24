@@ -358,7 +358,7 @@ func damage_land(pos: Vector2i, amount: int):
 		}
 	EventManager.on_cell_data_changed.emit(pos, info)
 	
-	print("網格 ", pos, " (", CellType.keys()[data.type] ,") 受到攻擊！ 目前血量: ", target_data.current_hp)
+	#print("網格 ", pos, " (", CellType.keys()[data.type] ,") 受到攻擊！ 目前血量: ", target_data.current_hp)
 	# 血量歸零的判定
 	if target_data.current_hp <= 0:
 		if data.type == CellType.VOLCANO:

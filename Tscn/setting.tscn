@@ -81,8 +81,8 @@ layout_mode = 2
 size_flags_vertical = 8
 text = "Return "
 
-[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Button1" to="." method="_on_button_1_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Button1" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer2/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/Button1" to="." method="_on_button_1_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer2/Button2" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer2/Button2" to="." method="_on_button_2_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Return" to="." method="_on_return_pressed"]

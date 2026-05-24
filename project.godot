@@ -21,6 +21,7 @@ EventManager="*uid://vygbog5dhl4q"
 GenerateManager="*uid://l8o2rec6pmbl"
 ResourceManager="*uid://sracwmvu4y58"
 Phase="*uid://clmwdgoli04oq"
+SoundManager="*uid://br35onhlv8so1"
 
 [display]
 

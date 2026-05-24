@@ -38,11 +38,14 @@ func _process(delta: float) -> void:
 	if time_accumulator >= spawn_interval:
 		time_accumulator -= spawn_interval
 		_on_timer_tick()
-	
+		
+	var current_phase = Phase.getPhase()
+	SoundManager.play_bgm_for_phase(current_phase)
+		
 	# 🌟 簡單觸發邏輯：如果遊戲時間達到 60 秒，召喚 Boss (只召喚一次)
-		if map_manager.elapsed_time > 1.0 and not has_spawned_boss:		
-			spawn_boss()
-			has_spawned_boss = true
+	if map_manager.elapsed_time > 1.0 and not has_spawned_boss:		
+		spawn_boss()
+		has_spawned_boss = true
 
 
 func _on_timer_tick() -> void:
