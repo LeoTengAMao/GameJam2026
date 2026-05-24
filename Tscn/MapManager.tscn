@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
 [ext_resource type="Texture2D" uid="uid://bc34gujvqb7as" path="res://Assests/Tile/Test.png" id="5_aylwq"]
-[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Texture2D" uid="uid://bxaewxvy0rouv" path="res://Assests/Tile/Volcano.png" id="6_rfj0g"]
 [ext_resource type="Texture2D" uid="uid://bdpckm7dwg0fv" path="res://Assests/Tile/HeartOfOcean.png" id="7_4j60b"]
@@ -411,6 +411,7 @@ metadata/_custom_type_script = "uid://dnypkcyv7ouxa"
 
 [node name="MonsterGenerator" type="Node" parent="." unique_id=444276619 node_paths=PackedStringArray("monster_pool", "map_manager")]
 script = ExtResource("14_fxjfw")
+spawn_interval = null
 monster_pool = NodePath("../MonsterPool")
 map_manager = NodePath("..")
 metadata/_custom_type_script = "uid://3fqndhasy1mx"
