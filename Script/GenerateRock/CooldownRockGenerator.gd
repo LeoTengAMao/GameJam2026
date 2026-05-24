@@ -45,6 +45,9 @@ func _on_remove_area_rock(area: GenerateArea) -> void:
 
 func _spawn_n_rock() -> void:
 	for area in GenerateManager._areas:
+		var chance = randi() % 5;
+		print(chance)
+		if chance != 0: continue
 		var spawn_global_pos = GenerateManager.get_spawn_global_position(area)
 		var rock = rock_pool.spawn_rock(spawn_global_pos)
 		
