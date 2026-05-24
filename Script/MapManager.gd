@@ -85,6 +85,7 @@ func _ready():
 				# 否則就是陸地
 				grid_data[pos] = CellData.new(CellType.LAND, 100)
 				EventManager.simple_map_data[pos] = "LAND"
+				EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
 				# 注意：這裡呼叫 update_all_coasts() 會統一繪製，不用在這裡重複 emit 視覺訊號
 	
 	# ... 後續的海洋之心與侵蝕邏輯保持不變 ...
@@ -354,22 +355,20 @@ func _set_visual_tile(pos: Vector2i, type: CellType):
 			var atlas_coord = Vector2i(mask % 4, mask / 4)
 			tilemap.set_cell(pos, 6, atlas_coord)
 			
-			if mask == 15:
-				
-				var corner_mask = _get_corner_mask(pos)
+			var corner_mask = _get_corner_mask(pos)
 				
 				# 假設轉角圖塊所在的 ID 是 2 (請根據你實際的 TileSet 調整)
-				var CORNER_ID = 0
+			var CORNER_ID = 0
 				
 				# 每個角獨立判斷，獨立畫在專屬的透明圖層上
-				if corner_mask & 1: 
-					overlay_tl.set_cell(pos, CORNER_ID, Vector2i(0, 0))
-				if corner_mask & 2: 
-					overlay_tr.set_cell(pos, CORNER_ID, Vector2i(1, 0))
-				if corner_mask & 4: 
-					overlay_bl.set_cell(pos, CORNER_ID, Vector2i(0, 1))
-				if corner_mask & 8: 
-					overlay_br.set_cell(pos, CORNER_ID, Vector2i(1, 1))
+			if corner_mask & 1: 
+				overlay_tl.set_cell(pos, CORNER_ID, Vector2i(0, 0))
+			if corner_mask & 2: 
+				overlay_tr.set_cell(pos, CORNER_ID, Vector2i(1, 0))
+			if corner_mask & 4: 
+				overlay_bl.set_cell(pos, CORNER_ID, Vector2i(0, 1))
+			if corner_mask & 8: 
+				overlay_br.set_cell(pos, CORNER_ID, Vector2i(1, 1))
 		
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed:

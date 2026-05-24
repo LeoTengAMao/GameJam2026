@@ -36,10 +36,10 @@ func get_random_local_position() -> Vector2:
 
 # 讓編輯器視覺化：畫出生成的矩形範圍（綠色框線）
 
-func _draw() -> void:
-	if Engine.is_editor_hint() or OS.is_debug_build():
-		var rect = Rect2(Vector2(-width / 2.0, -height / 2.0), Vector2(width, height))
-		draw_rect(rect, Color.GREEN, false, 2.0)
+#func _draw() -> void:
+#	if Engine.is_editor_hint() or OS.is_debug_build():
+#		var rect = Rect2(Vector2(-width / 2.0, -height / 2.0), Vector2(width, height))
+#		draw_rect(rect, Color.GREEN, false, 2.0)
 		
 func initialize(spawn_position: Vector2) -> void:
 	global_position = spawn_position

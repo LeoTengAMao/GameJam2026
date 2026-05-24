@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dc2ghlxmfkyk7"]
 
 [ext_resource type="Script" uid="uid://b1e68cafchwum" path="res://Script/GenerateRock/Rock.gd" id="1_phrdy"]
-[ext_resource type="Texture2D" uid="uid://iud5lfp5pv3n" path="res://icon.svg" id="2_phrdy"]
+[ext_resource type="Texture2D" uid="uid://clanuy8skicib" path="res://Assests/Sprites/rock.png" id="2_phrdy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_phrdy"]
 size = Vector2(124, 126)
@@ -13,4 +13,5 @@ script = ExtResource("1_phrdy")
 shape = SubResource("RectangleShape2D_phrdy")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=727964208]
+z_index = 4
 texture = ExtResource("2_phrdy")
