@@ -205,6 +205,7 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 			var cost = 20 # 砲台比較貴
 			if ResourceManager.spend_stones(cost):
 				data.has_turret = true
+				SFXManager.play_sfx("golem")
 				print("🔫 砲台建造完成！")
 				
 				var anim_spr = AnimatedSprite2D.new()
