@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 	SoundManager.play_bgm_for_phase(current_phase)
 		
 	# 🌟 簡單觸發邏輯：如果遊戲時間達到 60 秒，召喚 Boss (只召喚一次)
-	if map_manager.elapsed_time > 1.0 and not has_spawned_boss:		
+	if map_manager.elapsed_time > 240.0 and not has_spawned_boss:		
 		spawn_boss()
 		has_spawned_boss = true
 

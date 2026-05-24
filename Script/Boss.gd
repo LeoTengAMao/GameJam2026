@@ -104,9 +104,11 @@ func _is_footprint_free(anchor: Vector2i) -> bool:
 # MAIN LOOP
 # =========================
 func _process(delta):
+	# 無論在 MOVE 還是 ATTACK，都維持攻擊能力
 	match state:
 		State.MOVE:
 			_handle_move(delta)
+			_handle_attack(delta) # 🌟 把攻擊檢查也放進來，讓他移動時也能攻擊
 		State.ATTACK:
 			_handle_attack(delta)
 
@@ -145,26 +147,27 @@ func _handle_move(delta):
 # ATTACK — randomly destroy land + damage volcano
 # =========================
 func _handle_attack(delta):
-	# If somehow drifted away, go back to moving
-	if not _is_near_volcano():
-		state = State.MOVE
-		path = []
-		return
+	# 刪除原本的距離判斷，Boss 不再需要靠近火山才攻擊
+	# if not _is_near_volcano():
+	# 	state = State.MOVE
+	# 	return
 
 	# Random land destruction
 	land_attack_cooldown -= delta
-	print("boss 對 land 攻擊了")
 	if land_attack_cooldown <= 0:
 		_do_land_attack()
 		land_attack_cooldown = LAND_ATTACK_INTERVAL
-		sprite.play("attack")
+		# 檢查是否在播放攻擊動畫，避免動畫不斷被中斷
+		if sprite.animation != "attack":
+			sprite.play("attack")
 
-	# Volcano damage
+	# Volcano damage (現在 Boss 在地圖任何地方都可以對火山造成威脅)
 	volcano_attack_cooldown -= delta
 	if volcano_attack_cooldown <= 0:
 		_do_volcano_attack()
 		volcano_attack_cooldown = VOLCANO_ATTACK_INTERVAL
-		sprite.play("attack")
+		if sprite.animation != "attack":
+			sprite.play("attack")
 
 func _do_land_attack():
 	var lands = EventManager.simple_map_data.keys()
