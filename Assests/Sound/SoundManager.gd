@@ -7,6 +7,13 @@ var Phase3 = preload("res://Assests/BGM/Phase3.mp3")
 var current_phase = -1
 func _ready():
 	volume_db = -5.0
+	if EventManager.has_signal("game_over"):
+		EventManager.game_over.connect(_stop_music)
+
+func _stop_music():
+	stop()
+	current_phase = -1 # 重置階段，防止恢復遊戲時出錯
+	print("🔇 遊戲結束，音樂已停止")
 
 # 方便外部隨時切換音樂的函式
 func play_new_bgm(new_stream: AudioStream):

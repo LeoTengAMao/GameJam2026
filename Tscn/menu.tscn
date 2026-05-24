@@ -49,11 +49,11 @@ size_flags_vertical = 3
 
 [node name="TextureRect" type="TextureRect" parent="Panel/Panel/Control2" unique_id=1875536860]
 layout_mode = 0
-offset_left = -103.00003
-offset_top = -60.000015
-offset_right = 1433.0
-offset_bottom = 964.0
-scale = Vector2(0.4, 0.4)
+offset_left = -22.0
+offset_top = -54.0
+offset_right = 1514.0
+offset_bottom = 970.0
+scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_0l1wo")
 
 [node name="Panel" type="VBoxContainer" parent="Panel/Panel" unique_id=150775898]
@@ -80,6 +80,12 @@ size_flags_vertical = 3
 theme_override_font_sizes/font_size = 40
 text = "Staffs"
 
+[node name="Toriel" type="Button" parent="Panel/Panel/Panel" unique_id=1685515101]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 40
+text = "Tutorial"
+
 [node name="Exit" type="Button" parent="Panel/Panel/Panel" unique_id=457852843]
 layout_mode = 2
 size_flags_vertical = 3
@@ -100,4 +106,5 @@ script = ExtResource("2_5vq8g")
 [connection signal="pressed" from="Panel/Panel/Panel/Start" to="Control" method="_on_start_button_pressed"]
 [connection signal="pressed" from="Panel/Panel/Panel/Setting" to="Control" method="_on_setting_button_pressed"]
 [connection signal="pressed" from="Panel/Panel/Panel/Staff" to="Control" method="_on_staff_button_pressed"]
+[connection signal="pressed" from="Panel/Panel/Panel/Toriel" to="Control" method="_on_toriel_pressed"]
 [connection signal="pressed" from="Panel/Panel/Panel/Exit" to="Control" method="_on_exit_button_pressed"]

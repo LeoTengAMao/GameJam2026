@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dgkqgw0uk4kk8"]
 
+[ext_resource type="Script" uid="uid://cv583r1qmcam" path="res://Tscn/Staff.gd" id="1_6rtcm"]
 [ext_resource type="Texture2D" uid="uid://djjlsjow2rxho" path="res://Assests/螢幕擷取畫面 2026-05-09 201217.png" id="1_u6lxv"]
 [ext_resource type="Script" uid="uid://5mo7hsc2ve32" path="res://Script/Menu/ChangeSceneManager.gd" id="2_6rtcm"]
 
@@ -12,6 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("1_6rtcm")
 
 [node name="Panel" type="Control" parent="." unique_id=1058663693]
 layout_mode = 1
@@ -153,8 +155,15 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="Back" type="Button" parent="Panel/Panel/MarginContainer/Panel" unique_id=1958940584]
+layout_mode = 2
+theme_override_font_sizes/font_size = 27
+text = "Return"
+
 [node name="Control" type="Control" parent="." unique_id=1738806546]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("2_6rtcm")
+
+[connection signal="pressed" from="Panel/Panel/MarginContainer/Panel/Back" to="." method="_on_back_pressed"]
