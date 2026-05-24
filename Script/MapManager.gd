@@ -1,6 +1,10 @@
 extends Node2D
 class_name MapManager
 
+
+
+
+
 enum CellType { SEA, LAND, COAST, VOLCANO, OCEAN_HEART }
 const TILE_SOURCE_ID = 5 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
 @onready var corner_overlay: TileMapLayer = $CornerOverlay # 🌟 抓住新層
@@ -26,6 +30,13 @@ class CellData:
 	var area: GenerateArea
 	var core_data: CellData = null
 	var origin_pos: Vector2i = Vector2i.ZERO 
+	
+	var has_turret: bool = false
+	var turret_cooldown: float = 0.0
+	var turret_attack_speed: float = 1.0 # 每秒射擊一次
+	var turret_damage: int = 5
+	var turret_range: float = 4.0 # 射程 4 格
+	var turret_sprite: Sprite2D = null # 砲台的外觀
 	func _init(_type: CellType, _max_hp: int, _origin: Vector2i = Vector2i.ZERO):
 		self.type = _type
 		self.max_hp = _max_hp
@@ -69,6 +80,41 @@ func _process(delta: float) -> void:
 		EventManager.on_cell_hovered.emit(true, type_name, target_data.current_hp, target_data.max_hp)
 	else:
 		EventManager.on_cell_hovered.emit(false, "", 0, 0)
+		
+	var monsters = get_tree().get_nodes_in_group("monsters")
+	
+	for pos in grid_data.keys():
+		var data: CellData = grid_data[pos]
+		
+		# 如果這塊地有蓋砲台
+		if data.has_turret:
+			data.turret_cooldown -= delta
+			
+			# 如果冷卻完畢，準備開火
+			if data.turret_cooldown <= 0:
+				var best_target = null
+				var best_dist = INF
+				
+				# 尋找射程內最近的怪物
+				for m in monsters:
+					# 🌟 換成這個最安全的寫法：如果怪物是空的、準備被刪除、或已經死了，就跳過
+					if m == null or m.is_queued_for_deletion() or m.hp <= 0: 
+						continue
+					
+					var dist = Vector2(pos).distance_to(Vector2(m.grid_pos))
+					if dist <= data.turret_range and dist < best_dist:
+						best_target = m
+						best_dist = dist
+				
+				# 如果有找到目標，開火！
+				if best_target != null:
+					# ⚠️ 注意！這裡會呼叫怪物的 take_damage 函式！
+					best_target.take_damage(data.turret_damage)
+					data.turret_cooldown = data.turret_attack_speed
+					
+					_draw_laser(pos, best_target.grid_pos)	
+	
+	
 func _ready():
 	EventManager.upgrade_requested.connect(_on_upgrade_requested)
 	var volcano_core = CellData.new(CellType.VOLCANO, 1000)
@@ -113,6 +159,20 @@ func _ready():
 
 var land_build_cost: int = 5 # MapManager 只需記錄「造陸的標價」
 
+func _draw_laser(from_grid: Vector2i, to_grid: Vector2i):
+	var line = Line2D.new()
+	line.add_point(Vector2(from_grid) * 128 + Vector2(64, 64))
+	line.add_point(Vector2(to_grid) * 128 + Vector2(64, 64))
+	line.width = 4.0
+	line.default_color = Color(1, 0.8, 0.2, 0.8) # 橘黃色雷射
+	line.z_index = 10
+	add_child(line)
+	
+	# 0.1 秒後自動消失
+	var tween = create_tween()
+	tween.tween_property(line, "modulate:a", 0.0, 0.1)
+	tween.tween_callback(line.queue_free)
+
 # MapManager.gd 現在的 _on_upgrade_requested 變得超級乾淨
 func _on_upgrade_requested(target_type: String, upgrade_id: String):
 	if current_selected_pos == Vector2i(-10000, -10000): return
@@ -126,6 +186,23 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 			data.current_hp = data.max_hp
 			print("🏝️ 土地已加固！新血量: ", data.max_hp)
 			_refresh_side_panel()
+	elif target_type == "turret": 
+		var data = grid_data[current_selected_pos]
+		# 必須是陸地，且還沒蓋過砲台
+		if (data.type == CellType.LAND or data.type == CellType.COAST) and not data.has_turret:
+			var cost = 20 # 砲台比較貴
+			if ResourceManager.spend_stones(cost):
+				data.has_turret = true
+				print("🔫 砲台建造完成！")
+				
+				# 放一個簡單的外觀讓你知道砲台蓋好了
+				var spr = Sprite2D.new()
+				spr.texture = load("res://icon.svg") # 暫時用 Godot 頭像代替，請換成你的砲台圖片
+				spr.position = Vector2(current_selected_pos) * 128 + Vector2(64, 64)
+				spr.scale = Vector2(0.3, 0.3)
+				spr.z_index = 5 # 蓋在土地上面
+				add_child(spr)
+				data.turret_sprite = spr
 
 # 🌟 補上這個函式：升級完畢後，呼叫這個讓側邊欄的數字立刻跳動更新
 func _refresh_side_panel():
@@ -138,7 +215,8 @@ func _refresh_side_panel():
 		"type": data.type,
 		"hp": target.current_hp,
 		"max_hp": target.max_hp,
-		"level": target.level if "level" in target else 1
+		"level": target.level if "level" in target else 1,
+		"has_turret": data.has_turret
 	}
 	EventManager.on_cell_selected.emit(current_selected_pos,info)
 
@@ -286,16 +364,27 @@ func _destroy_volcano():
 	update_all_coasts()
 	
 # 土地被摧毀的處理
+# 土地被摧毀的處理
 func _destroy_land(pos: Vector2i):
-	# 1. 將該網格狀態改回海洋 (從字典移除，或設為 SEA)
+	if grid_data.has(pos):
+		if grid_data[pos].has_turret and grid_data[pos].turret_sprite != null:
+			grid_data[pos].turret_sprite.queue_free()
+			
+	# 2. 將該網格狀態改回海洋 (從字典移除，或設為 SEA)
 	grid_data.erase(pos) 
 	EventManager.simple_map_data.erase(pos)
-	# 2. 視覺上清除該圖塊 (例如設為 -1 表示清空)
-	tilemap.set_cell(pos, -1, Vector2i(-1, -1))
 	
-	# 3. 因為有土地消失了，原本在它旁邊的內陸可能會變成新的海岸！
+	# 3. 視覺上清除該圖塊 (例如設為 -1 表示清空)
+	tilemap.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_tl.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_tr.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_bl.set_cell(pos, -1, Vector2i(-1, -1))
+	overlay_br.set_cell(pos, -1, Vector2i(-1, -1))
+	
+	# 4. 因為有土地消失了，原本在它旁邊的內陸可能會變成新的海岸！
 	update_all_coasts()
 	EventManager.on_destory_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
+	
 
 func _get_land_mask(pos: Vector2i) -> int:
 	var mask = 0
@@ -385,7 +474,8 @@ func _unhandled_input(event):
 					"type": data.type,
 					"hp": target.current_hp,
 					"max_hp": target.max_hp,
-					"level": target.level if "level" in target else 1
+					"level": target.level if "level" in target else 1,
+					"has_turret": data.has_turret  # 👈 加上這行，UI 才會知道這塊地能蓋砲台！
 				}
 				
 				# 🌟 修正：這裡要傳兩個參數 (pos, info)

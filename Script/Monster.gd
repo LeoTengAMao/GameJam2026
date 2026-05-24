@@ -505,6 +505,22 @@ func _attack_starfish():
 	else:
 		state = State.SEARCH
 
+func take_damage(amount: int):
+	hp -= amount
+	
+	# 可以加個閃爍特效或飄字
+	sprite.modulate = Color(1, 0.5, 0.5) # 變紅
+	var tween = create_tween()
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1), 0.2)
+	
+	if hp <= 0:
+		_die()
+
+func _die():
+	_release_cell(grid_pos) # 釋放佔用的網格
+	# 如果你有掉落物或是要加錢，可以在這裡寫 (例如: ResourceManager.add_stones(5))
+	queue_free() # 刪除怪物節點
+
 # =========================
 # 子彈
 # =========================
@@ -620,3 +636,5 @@ class Bullet extends Node2D:
 			return
 		EventManager.command_damage_land.emit(Vector2i(0, 0), damage)
 		queue_free()
+		
+	

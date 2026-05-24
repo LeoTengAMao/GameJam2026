@@ -138,6 +138,14 @@ func _on_cell_selected(pos: Vector2i,data: Dictionary):
 	elif data.type in [1, 2]: # 陸地或海岸
 		level_label.hide() # 土地沒有等級，藏起來
 		_create_dynamic_button("加固土地 - 10 🪨", "land", "fortify", 10)
+		if data.has("has_turret"):
+			if data.has_turret == false :
+				_create_dynamic_button("建造砲台 - 20 🪨", "turret", "build", 20)
+			else:
+				var btn = Button.new()
+				btn.text = "🔫 砲台已部署"
+				btn.disabled = true
+				upgrade_list.add_child(btn)
 	
 	# 🔧 修正：使用邊距同步動畫，確保 Click Box 判定區會跟著畫面的位移百分之百對齊！
 	if not panel_open:
