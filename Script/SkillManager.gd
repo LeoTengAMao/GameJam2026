@@ -23,13 +23,21 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 		
 		# === 🌋 處理火山的各種技能 ===
 		if upgrade_id == "heal_all" and ResourceManager.spend_stones(100):
+			SFXManager.play_sfx("Bigheal")
 			_skill_heal_all_land()
+		
+		elif upgrade_id == "heal_voc" and ResourceManager.spend_stones(200):
+			SFXManager.play_sfx("Bigheal")
+			volcano_core.current_hp +=200
+			if (volcano_core.current_hp > volcano_core.max_hp):
+				volcano_core.current_hp = volcano_core.max_hp
 		
 		elif upgrade_id == "random_land" and ResourceManager.spend_stones(150):
 			random_land_level += 1
 			_upgrade_passive_build_speed()
 				
 		elif upgrade_id == "defense_up" and ResourceManager.spend_stones(200):
+			SFXManager.play_sfx("DU")
 			_skill_global_defense_up()
 				
 		elif upgrade_id == "prod_speed" and ResourceManager.spend_stones(50):
@@ -79,6 +87,7 @@ func _skill_heal_all_land():
 		var cell = map.grid_data[pos]
 		if cell.type == map.CellType.LAND or cell.type == map.CellType.COAST:
 			cell.current_hp = cell.max_hp
+			
 
 func _skill_global_defense_up():
 	print("🛡️ 施放：堅固岩層！所有土地最大血量 +50！")

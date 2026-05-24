@@ -26,7 +26,7 @@ signal on_death
 # =========================
 var hp: int = 500
 var attack_damage: int = 100
-var volcano_damage: int = 20
+var volcano_damage: int = 40
 var speed: float = 0.3
 var grid_pos: Vector2i          # anchor = top-left cell of the 3x3
 
@@ -38,8 +38,8 @@ var land_attack_cooldown: float = 10.0
 var volcano_attack_cooldown: float = 10.0
 
 # 原本是 1.5 和 3.0，現在調慢（例如 4.0 和 6.0）
-const LAND_ATTACK_INTERVAL  := 12.0   # 每 4 秒才隨機拆一塊地
-const VOLCANO_ATTACK_INTERVAL := 10.0 # 每 6 秒才重擊火山一次
+const LAND_ATTACK_INTERVAL  := 10.0   # 每 4 秒才隨機拆一塊地
+const VOLCANO_ATTACK_INTERVAL := 8.0 # 每 6 秒才重擊火山一次
 const LAND_ATTACK_RADIUS    := 6      # how far it can randomly destroy land
 
 # =========================
@@ -72,8 +72,15 @@ func _draw_laser(to_pos: Vector2i):
 
 
 func _ready():
+	# 確保動畫設定正確
+	sprite.sprite_frames.set_animation_loop("attack", false) # 確保攻擊不循環
 	sprite.play("idle")
-	sprite.scale = Vector2(3.0,3.0)
+	sprite.scale = Vector2(3.0, 3.0)
+	
+	# 連結動畫結束訊號，回到 idle
+	if not sprite.animation_finished.is_connected(_on_animation_finished):
+		sprite.animation_finished.connect(_on_animation_finished)
+		
 	shield.modulate = Color(1, 1, 0, 0.5)
 	# 連結 Area2D 的訊號，而不是覆寫 Boss 的 input_event
 	$Area2D.input_event.connect(_on_area_input)
@@ -83,6 +90,10 @@ func _ready():
 			sprite.play("idle")
 	)
 
+# 統一處理動畫結束的函式
+func _on_animation_finished():
+	if sprite.animation == "attack":
+		sprite.play("idle")
 
 # 2. 修改點擊判斷為右鍵 (MOUSE_BUTTON_RIGHT)
 func _on_area_input(_viewport, event, _shape_idx):
@@ -182,32 +193,25 @@ func _handle_move(delta):
 # ATTACK — randomly destroy land + damage volcano
 # =========================
 func _handle_attack(delta):
-	# Random land destruction
-	var attacking = false
+	# 1. 處理土地攻擊
 	land_attack_cooldown -= delta
 	if land_attack_cooldown <= 0:
 		_do_land_attack()
-		# 🌟 加上隨機數，讓間隔在 3.0 ~ 5.0 秒之間浮動
 		land_attack_cooldown = LAND_ATTACK_INTERVAL + randf_range(-1.0, 1.0)
-		if attacking:
-			sprite.play("attack")
-		
-		# 🌟 防鎖死機制：如果攻擊動畫播完了，強制切回 idle
-		if sprite.animation == "attack" and not sprite.is_playing():
-			sprite.play("idle")
+		_play_attack_animation() # 🌟 直接呼叫統一動畫函式
 
-	# Volcano damage
+	# 2. 處理火山攻擊
 	volcano_attack_cooldown -= delta
 	if volcano_attack_cooldown <= 0:
 		_do_volcano_attack()
-		# 🌟 加上隨機數，讓間隔在 5.0 ~ 7.0 秒之間浮動
 		volcano_attack_cooldown = VOLCANO_ATTACK_INTERVAL + randf_range(-1.0, 1.0)
-		if attacking:
-			sprite.play("attack")
+		_play_attack_animation() # 🌟 直接呼叫統一動畫函式
+
+# 🌟 新增一個統一控制動畫的函式，確保不會被每幀重置
+func _play_attack_animation():
+	if sprite.animation != "attack":
+		sprite.play("attack")
 		
-		# 🌟 防鎖死機制：如果攻擊動畫播完了，強制切回 idle
-		if sprite.animation == "attack" and not sprite.is_playing():
-			sprite.play("idle")
 func _do_land_attack():
 	var lands = EventManager.simple_map_data.keys()
 	if lands.is_empty():
@@ -361,7 +365,7 @@ func _enter_protect_mode():
 	# 🌟 使用 Tween 讓護盾「淡入」 (0.5秒)
 	var tween_in = create_tween()
 	tween_in.tween_property(shield, "modulate:a", 0.5, 0)
-	
+	SFXManager.play_sfx("Holy")
 	sprite.modulate = Color(0.3, 0.5, 1.0)
 	print("🛡️ Boss 進入保護階段！")
 	

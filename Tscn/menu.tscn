@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ds7vyeslibxf2"]
 
-[ext_resource type="Texture2D" uid="uid://b14dd8150kmf4" path="res://Assests/10232926.jpg" id="1_wtbr4"]
+[ext_resource type="Texture2D" uid="uid://cwl2hqvolsawb" path="res://Assests/export.png" id="1_wtbr4"]
 [ext_resource type="Script" uid="uid://5mo7hsc2ve32" path="res://Script/Menu/ChangeSceneManager.gd" id="2_5vq8g"]
 
 [node name="Menu" type="Control" unique_id=632046482]
@@ -61,7 +61,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 60
-text = "Title"
+text = "No Ocean"
 horizontal_alignment = 1
 vertical_alignment = 1
 
