@@ -318,6 +318,7 @@ func _heuristic(a: Vector2i, b: Vector2i) -> float:
 # =========================
 func take_damage(amount: int):
 	hp -= amount
+	EventManager.on_boss_hp_changed.emit(hp, 500) 
 	sprite.modulate = Color(1, 0.3, 0.3)
 	var tween = create_tween()
 	tween.tween_property(sprite, "modulate", Color(1, 1, 1), 0.3)

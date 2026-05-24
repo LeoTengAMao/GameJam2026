@@ -39,7 +39,7 @@ signal close_ui_requested
 var is_heart_surrounded: bool = false
 signal game_won
 signal game_over
-
+signal on_boss_hp_changed(_update_boss_hp:int)
 # 在 EventManager.gd 中
 var mousecam: bool = false
 var is_gentle_mode: bool = false

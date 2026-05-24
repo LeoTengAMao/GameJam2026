@@ -63,6 +63,16 @@ mouse_filter = 2
 layout_mode = 2
 text = "Stone Label"
 
+[node name="VolcanoHPBar" type="ProgressBar" parent="HUD/PanelContainer/VBoxContainer" unique_id=1774335886]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+value = 50.0
+
+[node name="BossHPBar" type="ProgressBar" parent="HUD/PanelContainer/VBoxContainer" unique_id=1205064638]
+visible = false
+layout_mode = 2
+
 [node name="Tooltip" type="Control" parent="." unique_id=1142001087]
 layout_mode = 3
 anchors_preset = 0
