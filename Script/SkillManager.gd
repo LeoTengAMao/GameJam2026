@@ -117,6 +117,24 @@ func _skill_random_build_land():
 		var keys = possible_seas.keys()
 		var lucky_pos = keys.pick_random()
 		
+		
+		# 如果 ocean_heart_rect 是我們不希望被佔用的區域
+		var forbidden_zone = []
+		# 範圍是 ocean_heart_rect 往外擴張 1 格
+		for x in range(map.ocean_heart_rect.position.x - 1, map.ocean_heart_rect.end.x + 1):
+			for y in range(map.ocean_heart_rect.position.y - 1, map.ocean_heart_rect.end.y + 1):
+				forbidden_zone.append(Vector2i(x, y))
+	
+		var valid_keys = []
+		for pos in keys:
+			if not forbidden_zone.has(pos):
+				valid_keys.append(pos)
+		
+	
+		if valid_keys.size() == 0:
+			print("⚠️ 海洋之心附近太擠了，無法隨機造陸！")
+			return
+		
 		# 執行造陸
 		
 		map.grid_data[lucky_pos] = map.CellData.new(map.CellType.LAND, 100)
