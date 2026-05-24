@@ -33,12 +33,13 @@ var grid_pos: Vector2i          # anchor = top-left cell of the 3x3
 # =========================
 # TIMERS
 # =========================
-var move_cooldown: float = 0.0
-var land_attack_cooldown: float = 0.0
-var volcano_attack_cooldown: float = 0.0
+var move_cooldown: float = 10.0
+var land_attack_cooldown: float = 10.0
+var volcano_attack_cooldown: float = 10.0
 
-const LAND_ATTACK_INTERVAL  := 1.5   # destroy random land every 1.5s
-const VOLCANO_ATTACK_INTERVAL := 3.0  # hit volcano every 3s
+# 原本是 1.5 和 3.0，現在調慢（例如 4.0 和 6.0）
+const LAND_ATTACK_INTERVAL  := 4.0   # 每 4 秒才隨機拆一塊地
+const VOLCANO_ATTACK_INTERVAL := 6.0 # 每 6 秒才重擊火山一次
 const LAND_ATTACK_RADIUS    := 6      # how far it can randomly destroy land
 
 # =========================
@@ -147,28 +148,32 @@ func _handle_move(delta):
 # ATTACK — randomly destroy land + damage volcano
 # =========================
 func _handle_attack(delta):
-	# 刪除原本的距離判斷，Boss 不再需要靠近火山才攻擊
-	# if not _is_near_volcano():
-	# 	state = State.MOVE
-	# 	return
-
 	# Random land destruction
+	var attacking = false
 	land_attack_cooldown -= delta
 	if land_attack_cooldown <= 0:
 		_do_land_attack()
-		land_attack_cooldown = LAND_ATTACK_INTERVAL
-		# 檢查是否在播放攻擊動畫，避免動畫不斷被中斷
-		if sprite.animation != "attack":
+		# 🌟 加上隨機數，讓間隔在 3.0 ~ 5.0 秒之間浮動
+		land_attack_cooldown = LAND_ATTACK_INTERVAL + randf_range(-1.0, 1.0)
+		if attacking:
 			sprite.play("attack")
+		
+		# 🌟 防鎖死機制：如果攻擊動畫播完了，強制切回 idle
+		if sprite.animation == "attack" and not sprite.is_playing():
+			sprite.play("idle")
 
-	# Volcano damage (現在 Boss 在地圖任何地方都可以對火山造成威脅)
+	# Volcano damage
 	volcano_attack_cooldown -= delta
 	if volcano_attack_cooldown <= 0:
 		_do_volcano_attack()
-		volcano_attack_cooldown = VOLCANO_ATTACK_INTERVAL
-		if sprite.animation != "attack":
+		# 🌟 加上隨機數，讓間隔在 5.0 ~ 7.0 秒之間浮動
+		volcano_attack_cooldown = VOLCANO_ATTACK_INTERVAL + randf_range(-1.0, 1.0)
+		if attacking:
 			sprite.play("attack")
-
+		
+		# 🌟 防鎖死機制：如果攻擊動畫播完了，強制切回 idle
+		if sprite.animation == "attack" and not sprite.is_playing():
+			sprite.play("idle")
 func _do_land_attack():
 	var lands = EventManager.simple_map_data.keys()
 	if lands.is_empty():

@@ -119,9 +119,9 @@ func _process(delta: float) -> void:
 						# 先 play 再 set frame 0，確保每一次開火都從動畫第一幀開始，且不循環
 						data.turret_anim.play("attack")
 						data.turret_anim.frame = 0
-					
-					_draw_laser(pos, best_target.grid_pos)	
 					SFXManager.play_sfx("laser")
+					_draw_laser(pos, best_target.grid_pos)	
+					
 	
 	
 func _ready():
@@ -146,6 +146,9 @@ func _ready():
 	# ... 後續的海洋之心與侵蝕邏輯保持不變 ...
 	var heart_pos = Vector2i(35, -1)
 	var ocean_heart_core = CellData.new(CellType.OCEAN_HEART, 99999)
+	
+	ocean_heart_rect = Rect2i(heart_pos, Vector2i(3, 3))
+	
 	for x in range(heart_pos.x, heart_pos.x + 3):
 		for y in range(heart_pos.y, heart_pos.y + 3):
 			var pos = Vector2i(x, y)
@@ -266,6 +269,7 @@ func build_land(pos: Vector2i, starting_hp: int = 100) -> bool:
 		
 	# 4. 扣款成功，執行造陸邏輯
 	grid_data[pos] = CellData.new(CellType.LAND, starting_hp)
+	SFXManager.play_sfx("place")
 	EventManager.simple_map_data[pos] = "LAND"
 	
 	EventManager.on_create_land.emit(Vector2(pos * 128) + Vector2(128/2, 128/2))
@@ -526,30 +530,40 @@ func _is_adjacent_to_land(pos: Vector2i) -> bool:
 
 # 檢查海洋之心周圍的一圈 (共 16 格) 是否都是土地
 func check_ocean_heart_surrounded():
+	# 容錯處理：如果矩形根本沒設，直接跳出
+	if ocean_heart_rect.size == Vector2i.ZERO: return
+	
 	var surrounded = true
 	
-	# 掃描 3x3 外圍擴展 1 格的範圍 (也就是 5x5)
+	# 掃描 3x3 外圍擴展 1 格
 	for x in range(ocean_heart_rect.position.x - 1, ocean_heart_rect.end.x + 1):
 		for y in range(ocean_heart_rect.position.y - 1, ocean_heart_rect.end.y + 1):
 			var pos = Vector2i(x, y)
 			
-			# 如果是海洋之心內部的 3x3 格子，跳過不檢查
 			if ocean_heart_rect.has_point(pos):
 				continue
-				
-			# 如果外圍有任何一格是「沒有資料(海洋)」或是「SEA狀態」，代表沒包好！
-			if not grid_data.has(pos) or grid_data[pos].type == CellType.SEA:
+			
+			# 🌟 關鍵邏輯修改：
+			# 如果該位置沒有資料(SEA) 或 狀態是 SEA，代表封印被破壞
+			# 只有當該位置存在資料「且」類型是 LAND/COAST/VOLCANO 時，才算被包圍
+			var is_solid = false
+			if grid_data.has(pos):
+				var type = grid_data[pos].type
+				if type == CellType.LAND or type == CellType.COAST or type == CellType.VOLCANO:
+					is_solid = true
+			
+			if not is_solid:
 				surrounded = false
 				break
 				
-	# 更新給全域知道，並在第一次包圍成功時印出提示
-	if surrounded and not EventManager.is_heart_surrounded:
-		print("✨ 神聖封印完成！海洋之心已被完全包圍！火山大爆炸解鎖！")
-	elif not surrounded and EventManager.is_heart_surrounded:
-		print("⚠️ 封印破裂！海洋之心的包圍網被破壞了！")
-		
-	EventManager.is_heart_surrounded = surrounded
-	
+	# 更新全域狀態
+	if surrounded != EventManager.is_heart_surrounded:
+		EventManager.is_heart_surrounded = surrounded
+		if surrounded:
+			print("✨ 神聖封印完成！海洋之心已被完全包圍！")
+		else:
+			print("⚠️ 封印破裂！")
+
 func get_ocean_side_land_position() -> Vector2:
 	var valid_ocean_positions: Array[Vector2i] = []
 	

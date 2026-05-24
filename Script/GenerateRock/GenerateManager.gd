@@ -20,26 +20,30 @@ func cancel_area(area: GenerateArea) -> void:
 var total_area: float
 # 依照面積權重，隨機挑選一個 Area
 func _pick_area_by_weight() -> GenerateArea:
+	# 1. 徹底清理已釋放物件 (這是防崩潰最關鍵的一步)
+	# 使用 filter 移除所有已經無效的物件
+	_areas = _areas.filter(func(a): return is_instance_valid(a))
+	
 	if _areas.size() == 0:
 		return null
 
-	# 1. 計算所有區域的總面積
-	total_area = 0.0
+
+	# 2. 計算總面積
+	var total_area: float = 0.0
+
 	for area in _areas:
 		total_area += area.area_size
 
-	# 2. 在 0 ~ 總面積 之間搖一個隨機數
+	# 3. 隨機選擇
 	var random_weight = randf_range(0.0, total_area)
-
-	# 3. 遍歷區域，看隨機數落在哪個區間
 	var current_weight_sum: float = 0.0
+	
 	for area in _areas:
 		current_weight_sum += area.area_size
 		if random_weight <= current_weight_sum:
-			return area # 抽中這個區域！
+			return area 
 
-	return _areas[-1] # 防呆
-
+	return _areas[-1]
 # 核心觸發：依照權重隨機在地圖上的某個 Area 的某個點生成位置
 # 備註：GDScript 沒有 Vector2? 這種 Nullable 型別，若沒抽中一律回傳 null，所以回傳型別宣告為 Variant
 func get_random_spawn_global_position() -> Variant:
