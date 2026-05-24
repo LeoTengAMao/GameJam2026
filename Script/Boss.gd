@@ -33,8 +33,8 @@ var grid_pos: Vector2i          # anchor = top-left cell of the 3x3
 # =========================
 # TIMERS
 # =========================
-var move_cooldown: float = 10.0
-var land_attack_cooldown: float = 10.0
+var move_cooldown: float = 8.0
+var land_attack_cooldown: float = 8.0
 var volcano_attack_cooldown: float = 10.0
 
 # 原本是 1.5 和 3.0，現在調慢（例如 4.0 和 6.0）
