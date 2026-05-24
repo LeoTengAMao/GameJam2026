@@ -53,7 +53,13 @@ var path: Array[Vector2i] = []
 
 func _ready():
 	sprite.play("idle")
-	sprite.scale = Vector2i(3.0,3.0)
+	sprite.scale = Vector2(3.0,3.0)
+	sprite.animation_finished.connect(func():
+		if sprite.animation == "attack":
+			sprite.play("idle")
+	)
+	
+	
 func initialize(pos: Vector2i):
 	grid_pos = pos
 	_update_position()
@@ -150,12 +156,14 @@ func _handle_attack(delta):
 	if land_attack_cooldown <= 0:
 		_do_land_attack()
 		land_attack_cooldown = LAND_ATTACK_INTERVAL
+		sprite.play("attack")
 
 	# Volcano damage
 	volcano_attack_cooldown -= delta
 	if volcano_attack_cooldown <= 0:
 		_do_volcano_attack()
 		volcano_attack_cooldown = VOLCANO_ATTACK_INTERVAL
+		sprite.play("attack")
 
 func _do_land_attack():
 	var lands = EventManager.simple_map_data.keys()

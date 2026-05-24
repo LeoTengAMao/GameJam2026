@@ -294,7 +294,7 @@ func _on_erosion_timer_timeout():
 	# 2. 如果火山接觸到海，對核心扣血一次
 	if volcano_touching_sea:
 		damage_land(volcano_core_pos, current_damage*4)
-		print("🌋 火山接觸到海水！受到侵蝕傷害: ", current_damage)
+		#print("🌋 火山接觸到海水！受到侵蝕傷害: ", current_damage)
 		
 	# 遊戲時間顯示
 	var minutes = floori(elapsed_time / 60.0)
