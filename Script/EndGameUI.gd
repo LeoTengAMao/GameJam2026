@@ -50,6 +50,7 @@ func _play_popup_animation() -> void:
 # 🔄 重新開始遊戲
 func _on_restart_pressed() -> void:
 	print("按鈕被按到了！") # 看看 Output 視窗有沒有出現這行字
+	Phase.start_time = 0
 	_cleanup_game_state()
 	get_tree().change_scene_to_file("res://Game.tscn")
 	
