@@ -10,6 +10,9 @@ func _ready():
 	if EventManager.has_signal("game_over"):
 		EventManager.game_over.connect(_stop_music)
 
+func set_volume(db: float) -> void:
+	volume_db = db
+
 func _stop_music():
 	stop()
 	current_phase = -1 # 重置階段，防止恢復遊戲時出錯

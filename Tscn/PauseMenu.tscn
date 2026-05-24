@@ -1,0 +1,94 @@
+[gd_scene format=3 uid="uid://dcnx8xcfkpppo"]
+
+[ext_resource type="Script" uid="uid://d4hya2l2j6uqo" path="res://Tscn/PauseMenu.gd" id="1_w6eyk"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=859110514]
+process_mode = 3
+layer = 10
+script = ExtResource("1_w6eyk")
+
+[node name="Overlay" type="ColorRect" parent="." unique_id=767996298]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=79930606]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -220.0
+offset_right = 160.0
+offset_bottom = 220.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=1278326465]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/VBox" unique_id=940085511]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "暫停"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBox" unique_id=928735765]
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="Panel/VBox" unique_id=987351845]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "繼續遊戲"
+
+[node name="RestartButton" type="Button" parent="Panel/VBox" unique_id=45140255]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "重新開始"
+
+[node name="TitleButton" type="Button" parent="Panel/VBox" unique_id=79539772]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "返回主選單"
+
+[node name="HSeparator2" type="HSeparator" parent="Panel/VBox" unique_id=2119009786]
+layout_mode = 2
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/VBox" unique_id=1001023095]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MusicLabel" type="Label" parent="Panel/VBox/MusicRow" unique_id=2140551787]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "音樂"
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="Panel/VBox/MusicRow" unique_id=120793164]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -40.0
+max_value = 0.0
+
+[node name="SFXRow" type="HBoxContainer" parent="Panel/VBox" unique_id=1812262293]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SFXLabel" type="Label" parent="Panel/VBox/SFXRow" unique_id=239220882]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "音效"
+vertical_alignment = 1
+
+[node name="SFXSlider" type="HSlider" parent="Panel/VBox/SFXRow" unique_id=4442297]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -40.0
+max_value = 0.0
+
+[connection signal="pressed" from="Panel/VBox/ResumeButton" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Panel/VBox/RestartButton" to="." method="_on_restart_pressed"]
+[connection signal="pressed" from="Panel/VBox/TitleButton" to="." method="_on_title_pressed"]
+[connection signal="value_changed" from="Panel/VBox/MusicRow/MusicSlider" to="." method="_on_music_slider_changed"]
+[connection signal="value_changed" from="Panel/VBox/SFXRow/SFXSlider" to="." method="_on_sfx_slider_changed"]

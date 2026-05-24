@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://drhpb3g0xfi8d" path="res://Assests/Tile/TileMap.png" id="2_rgg21"]
 [ext_resource type="PackedScene" uid="uid://cnnifvdf8ntqa" path="res://Tscn/UIManager.tscn" id="3_2m3s5"]
 [ext_resource type="Texture2D" uid="uid://bc34gujvqb7as" path="res://Assests/Tile/Test.png" id="5_aylwq"]
-[ext_resource type="PackedScene" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
+[ext_resource type="PackedScene" uid="uid://p6hd7cw4d8xa" path="res://Tscn/rock_pool.tscn" id="5_x7wua"]
 [ext_resource type="PackedScene" uid="uid://408ws3jpbr8l" path="res://Tscn/timer.tscn" id="6_105op"]
 [ext_resource type="Texture2D" uid="uid://bxaewxvy0rouv" path="res://Assests/Tile/Volcano.png" id="6_rfj0g"]
 [ext_resource type="Texture2D" uid="uid://bdpckm7dwg0fv" path="res://Assests/Tile/HeartOfOcean.png" id="7_4j60b"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://b503cvkerelo2" path="res://Tscn/DebugMenu.tscn" id="16_djb5y"]
 [ext_resource type="Script" uid="uid://b5sumgxy2pibl" path="res://Script/BackgroundController.gd" id="16_erlml"]
 [ext_resource type="Script" uid="uid://clmwdgoli04oq" path="res://Script/phase.gd" id="24_b5v2i"]
+[ext_resource type="PackedScene" uid="uid://dcnx8xcfkpppo" path="res://Tscn/PauseMenu.tscn" id="25_11b4v"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0x2nf"]
 texture = ExtResource("10_kkvg3")
@@ -430,3 +431,5 @@ script = ExtResource("16_erlml")
 
 [node name="Node" type="Node" parent="." unique_id=191327838]
 script = ExtResource("24_b5v2i")
+
+[node name="PauseMenu" parent="." unique_id=859110514 instance=ExtResource("25_11b4v")]
