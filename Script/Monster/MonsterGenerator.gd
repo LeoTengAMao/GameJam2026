@@ -12,6 +12,8 @@ class_name MonsterGenerator
 @export var monster_pool: MonsterPool
 @export var map_manager: Node
 
+var isAdvancePhase : bool
+
 var time_accumulator: float = 0.0
 
 func _ready() -> void:
@@ -36,6 +38,9 @@ func spawn_boss():
 
 func _process(delta: float) -> void:
 	time_accumulator += delta
+	if not isAdvancePhase and Phase.getPhase() == 3: 
+		spawn_interval /= 2
+		isAdvancePhase = true
 	if time_accumulator >= spawn_interval:
 		time_accumulator -= spawn_interval
 		_on_timer_tick()
@@ -50,7 +55,6 @@ func _process(delta: float) -> void:
 
 
 func _on_timer_tick() -> void:
-	print(Phase.getPhase())
 	if Phase.getPhase() > 1:
 		_spawn_one_monster()
 

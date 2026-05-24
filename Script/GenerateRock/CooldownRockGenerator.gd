@@ -68,7 +68,7 @@ func _on_volcano_upgraded(level: int, _cur_hp: int, _max_hp: int) -> void:
 	# 等級 1: 2.0秒
 	# 等級 2: 1.7秒
 	# 等級 3: 1.4秒 ... 依此類推
-	var new_interval = 2.0 - (level - 1) * 0.3
+	var new_interval = 2.0 - (level - 1) * 0.5
 	
 	# 呼叫你原本寫好的設定函式
 	set_interval(new_interval)

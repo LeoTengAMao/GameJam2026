@@ -33,7 +33,7 @@ func _collect() -> void:
 
 	# 3. 發送訊號通知物件池持有人來回收我
 	collected.emit(self)
-	EventManager.stone_collected.emit(1)
+	EventManager.stone_collected.emit(10)
 
 func destroy() -> void:
 	# 1. 這裡可以處理遊戲邏輯（例如：玩家金幣 + resource_amount）

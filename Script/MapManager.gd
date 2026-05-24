@@ -55,12 +55,14 @@ var last_hovered_pos: Vector2i = Vector2i(-10000, -10000)
 var current_selected_pos: Vector2i = Vector2i(-10000, -10000)
 
 var erosion_timer: Timer
-var erosion_interval: float = 5.0
+var erosion_interval: float = 10.0
 var base_erosion_damage: float = 5
-var damage_growth_per_second: float = 0.1
+var damage_growth_per_second: float = 0
 var elapsed_time: float = 0.0
+var advance_erosion_damage: float = 10;
 
 func _process(delta: float) -> void:
+	if Phase.getPhase() == 3: base_erosion_damage = advance_erosion_damage
 	elapsed_time += delta
 	var mouse_global_pos = get_global_mouse_position()
 	var grid_pos = tilemap.local_to_map(mouse_global_pos)

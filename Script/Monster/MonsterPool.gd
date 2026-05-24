@@ -28,7 +28,8 @@ func _init_pool() -> void:
 			print("不可視")
 			monster.visible = false,
 			
-		10 # initial_capacity
+		10, # initial_capacity
+		10
 	)
 
 # 當你想在地圖上生成石頭時
@@ -64,4 +65,4 @@ func pick_random_monster(
 	var monster = _monster_pool.get_item() as Monster
 	
 	# 3. 呼叫初始化：直接傳入整數 0，或是用 類別名.列舉名 傳入（最安全）
-	monster.initialize(type, position, hp, atk, spd, atk_spd)
+	if (monster != null): monster.initialize(type, position, hp, atk, spd, atk_spd)

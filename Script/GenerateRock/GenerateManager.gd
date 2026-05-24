@@ -17,14 +17,14 @@ func cancel_area(area: GenerateArea) -> void:
 	if _areas.has(area):
 		_areas.erase(area)
 		on_cancel_area.emit(area);
-
+var total_area: float
 # 依照面積權重，隨機挑選一個 Area
 func _pick_area_by_weight() -> GenerateArea:
 	if _areas.size() == 0:
 		return null
 
 	# 1. 計算所有區域的總面積
-	var total_area: float = 0.0
+	total_area = 0.0
 	for area in _areas:
 		total_area += area.area_size
 

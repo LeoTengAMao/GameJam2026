@@ -3,7 +3,6 @@ class_name SkillManager
 
 # 抓住爸爸 (MapManager) 以便讀取地圖資料
 @onready var map: MapManager = get_parent()
-@export var CD : PackedScene
 @onready var passive_timer: Timer = $PassiveBuildTimer # 抓取剛剛建立的 Timer
 
 # 🌟 新增：被動技能等級變數
