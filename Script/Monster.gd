@@ -39,6 +39,7 @@ static var reserved_cells: Dictionary = {}
 
 func _ready():
 	# 這裡保證 sprite 絕對已經準備好了！
+	
 	sprite.play(animation_map[type])
 	sprite.scale = scale_map[type]
 

@@ -2,9 +2,7 @@ extends Node2D
 class_name MapManager
 
 
-
-
-
+const TURRET_FRAMES = preload("res://turret_frames.tres")
 enum CellType { SEA, LAND, COAST, VOLCANO, OCEAN_HEART }
 const TILE_SOURCE_ID = 5 # 確保這對應你在 TileSet 編輯器中設定的 Source ID
 @onready var corner_overlay: TileMapLayer = $CornerOverlay # 🌟 抓住新層
@@ -36,7 +34,7 @@ class CellData:
 	var turret_attack_speed: float = 1.0 # 每秒射擊一次
 	var turret_damage: int = 5
 	var turret_range: float = 4.0 # 射程 4 格
-	var turret_sprite: Sprite2D = null # 砲台的外觀
+	var turret_anim: AnimatedSprite2D = null
 	func _init(_type: CellType, _max_hp: int, _origin: Vector2i = Vector2i.ZERO):
 		self.type = _type
 		self.max_hp = _max_hp
@@ -111,6 +109,11 @@ func _process(delta: float) -> void:
 					# ⚠️ 注意！這裡會呼叫怪物的 take_damage 函式！
 					best_target.take_damage(data.turret_damage)
 					data.turret_cooldown = data.turret_attack_speed
+					
+					if data.turret_anim != null:
+						# 先 play 再 set frame 0，確保每一次開火都從動畫第一幀開始，且不循環
+						data.turret_anim.play("attack")
+						data.turret_anim.frame = 0
 					
 					_draw_laser(pos, best_target.grid_pos)	
 	
@@ -195,14 +198,32 @@ func _on_upgrade_requested(target_type: String, upgrade_id: String):
 				data.has_turret = true
 				print("🔫 砲台建造完成！")
 				
-				# 放一個簡單的外觀讓你知道砲台蓋好了
-				var spr = Sprite2D.new()
-				spr.texture = load("res://icon.svg") # 暫時用 Godot 頭像代替，請換成你的砲台圖片
-				spr.position = Vector2(current_selected_pos) * 128 + Vector2(64, 64)
-				spr.scale = Vector2(0.3, 0.3)
-				spr.z_index = 5 # 蓋在土地上面
-				add_child(spr)
-				data.turret_sprite = spr
+				var anim_spr = AnimatedSprite2D.new()
+				anim_spr.sprite_frames = TURRET_FRAMES # 賦予動畫資源
+				anim_spr.sprite_frames.set_animation_loop("attack", false)
+				anim_spr.animation = "idle" # 預設播放待機動畫
+				anim_spr.play()
+				
+				anim_spr.position = Vector2(current_selected_pos) * 128 + Vector2(64, 64-40)
+				
+				# 如果你的動畫圖片是原始大小(128x128)，這裡 scale 就設成 1
+				anim_spr.scale = Vector2(4.0, 4.0) 
+				anim_spr.z_index = 5 # 蓋在土地上面
+				add_child(anim_spr)
+				
+				data.turret_anim = anim_spr # 儲存引用
+				
+				# 🌟 當動畫播放完畢時，自動切換回待機動畫
+				anim_spr.animation_finished.connect(func():
+					if anim_spr.animation == "attack":	
+						anim_spr.play("idle")
+				)
+
+func _on_turret_animation_finished(anim_node: AnimatedSprite2D):
+	# 如果剛才播完的是攻擊動畫，就切換回待機
+	if anim_node.animation == "attack":
+		anim_node.play("idle")
+
 
 # 🌟 補上這個函式：升級完畢後，呼叫這個讓側邊欄的數字立刻跳動更新
 func _refresh_side_panel():
@@ -367,8 +388,9 @@ func _destroy_volcano():
 # 土地被摧毀的處理
 func _destroy_land(pos: Vector2i):
 	if grid_data.has(pos):
-		if grid_data[pos].has_turret and grid_data[pos].turret_sprite != null:
-			grid_data[pos].turret_sprite.queue_free()
+		# 變數名已改為 turret_anim
+		if grid_data[pos].has_turret and grid_data[pos].turret_anim != null:
+			grid_data[pos].turret_anim.queue_free()
 			
 	# 2. 將該網格狀態改回海洋 (從字典移除，或設為 SEA)
 	grid_data.erase(pos) 
