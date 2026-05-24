@@ -18,15 +18,15 @@ const VOLCANO_CELLS := [
 ]
 
 signal on_death
-
+@onready var shield: Sprite2D = $AnimatedSprite2D/Shield
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 # =========================
 # STATS
 # =========================
 var hp: int = 500
-var attack_damage: int = 10
-var volcano_damage: int = 15
+var attack_damage: int = 100
+var volcano_damage: int = 50
 var speed: float = 0.3
 var grid_pos: Vector2i          # anchor = top-left cell of the 3x3
 
@@ -38,8 +38,8 @@ var land_attack_cooldown: float = 10.0
 var volcano_attack_cooldown: float = 10.0
 
 # 原本是 1.5 和 3.0，現在調慢（例如 4.0 和 6.0）
-const LAND_ATTACK_INTERVAL  := 4.0   # 每 4 秒才隨機拆一塊地
-const VOLCANO_ATTACK_INTERVAL := 6.0 # 每 6 秒才重擊火山一次
+const LAND_ATTACK_INTERVAL  := 12.0   # 每 4 秒才隨機拆一塊地
+const VOLCANO_ATTACK_INTERVAL := 10.0 # 每 6 秒才重擊火山一次
 const LAND_ATTACK_RADIUS    := 6      # how far it can randomly destroy land
 
 # =========================
@@ -52,14 +52,48 @@ var path: Array[Vector2i] = []
 # reuse Monster's reserved_cells for collision avoidance
 # (Boss writes its own cells into the same dictionary)
 
+func _draw_laser(to_pos: Vector2i):
+	var line = Line2D.new()
+	# Boss 的中心點 (sprite 所在位置)
+	line.add_point(global_position) 
+	# 目標位置 (轉成世界座標)
+	line.add_point(Vector2(to_pos) * CELL_SIZE + ORIGIN_OFFSET)
+	
+	line.width = 8.0
+	line.default_color = Color(1, 0, 0, 0.8) # 紅色攻擊雷射
+	line.z_index = 10
+	get_parent().add_child(line) # 加入到跟 Boss 同一層
+	
+	# 0.2 秒後自動消失
+	var tween = create_tween()
+	tween.tween_property(line, "modulate:a", 0.0, 0.2)
+	tween.tween_callback(line.queue_free)
+
+
+
 func _ready():
 	sprite.play("idle")
 	sprite.scale = Vector2(3.0,3.0)
+	shield.modulate = Color(1, 1, 0, 0.5)
+	# 連結 Area2D 的訊號，而不是覆寫 Boss 的 input_event
+	$Area2D.input_event.connect(_on_area_input)
+
 	sprite.animation_finished.connect(func():
 		if sprite.animation == "attack":
 			sprite.play("idle")
 	)
+
+
+# 2. 修改點擊判斷為右鍵 (MOUSE_BUTTON_RIGHT)
+func _on_area_input(_viewport, event, _shape_idx):
+	if is_protected: return
+		
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT: # 🌟 改為右鍵
+		SFXManager.play_sfx("throwrock")
+		ResourceManager.spend_stones(5)
+		_take_click_damage(5)
 	
+
 	
 func initialize(pos: Vector2i):
 	grid_pos = pos
@@ -192,10 +226,14 @@ func _do_land_attack():
 		return	
 	
 	var pick: Vector2i = candidates[randi() % candidates.size()]
+	SFXManager.play_sfx("Blaser")
+	_draw_laser(pick)
 	EventManager.command_damage_land.emit(pick, attack_damage)
 
 func _do_volcano_attack():
 	# Hit all volcano cells (or pick a random one — your choice)
+	SFXManager.play_sfx("Blaser")
+	_draw_laser(VOLCANO_CELLS[0])
 	for cell in VOLCANO_CELLS:
 		EventManager.command_damage_land.emit(cell, volcano_damage)
 
@@ -286,3 +324,57 @@ func _die():
 	_release_footprint()
 	on_death.emit()
 	queue_free()
+	
+
+var is_protected: bool = false
+var protect_timer: float = 0.0
+const PROTECT_DURATION: float = 10.0
+
+func _input_event(_viewport, event, _shape_idx):
+	if is_protected:
+		return
+		
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_take_click_damage(5)
+
+var last_protected_hp: int = 500 # 用來記錄上次在哪個血量進入過保護
+
+func _take_click_damage(amount: int):
+	if is_protected: return # 🛡️ 保護期間直接拒絕扣血
+
+	SFXManager.play_sfx("throwrock")
+	take_damage(amount)
+	
+	# 邏輯：每扣 100 血就觸發一次 (500->400, 400->300...)
+	# 只要當前血量小於「上次保護門檻」且是 100 的倍數
+	if hp < last_protected_hp and hp % 100 == 0:
+		_enter_protect_mode()
+# 3. 修改保護模式邏輯
+func _enter_protect_mode():
+	is_protected = true
+	last_protected_hp = hp
+	
+	# 🌟 設定初始狀態
+	shield.modulate.a = 0.0  # 確保剛開始是全透明
+	shield.visible = true
+	
+	# 🌟 使用 Tween 讓護盾「淡入」 (0.5秒)
+	var tween_in = create_tween()
+	tween_in.tween_property(shield, "modulate:a", 1.0, 0.5)
+	
+	sprite.modulate = Color(0.3, 0.5, 1.0)
+	print("🛡️ Boss 進入保護階段！")
+	
+	await get_tree().create_timer(PROTECT_DURATION).timeout
+	
+	if is_instance_valid(self):
+		is_protected = false
+		
+		# 🌟 使用 Tween 讓護盾「淡出」 (0.5秒)
+		var tween_out = create_tween()
+		tween_out.tween_property(shield, "modulate:a", 0.0, 0.5)
+		# 確保淡出後隱藏
+		tween_out.tween_callback(func(): shield.visible = false)
+		
+		sprite.modulate = Color(1, 1, 1)
+		print("🛡️ Boss 保護結束！")

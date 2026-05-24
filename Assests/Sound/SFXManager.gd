@@ -6,7 +6,8 @@ var sfx_library = {
 	"laugh": preload("res://Assests/Sound/laugh.mp3"),
 	"place": preload("res://Assests/Sound/place.mp3"),
 	"throwrock": preload("res://Assests/Sound/throwrock.mp3"),
-	"golem": preload("res://Assests/Sound/golem.mp3")
+	"golem": preload("res://Assests/Sound/golem.mp3"),
+	"Blaser": preload("res://Assests/Sound/BigLaser.mp3")
 }
 
 # 🌟 改名為 play_sfx，避免與 AudioStreamPlayer 的內建 play() 衝突
