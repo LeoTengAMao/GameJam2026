@@ -26,7 +26,7 @@ signal on_death
 # =========================
 var hp: int = 500
 var attack_damage: int = 100
-var volcano_damage: int = 50
+var volcano_damage: int = 20
 var speed: float = 0.3
 var grid_pos: Vector2i          # anchor = top-left cell of the 3x3
 
@@ -90,8 +90,8 @@ func _on_area_input(_viewport, event, _shape_idx):
 		
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT: # 🌟 改為右鍵
 		SFXManager.play_sfx("throwrock")
-		ResourceManager.spend_stones(5)
-		_take_click_damage(5)
+		ResourceManager.spend_stones(3)
+		_take_click_damage(10)
 	
 
 	
