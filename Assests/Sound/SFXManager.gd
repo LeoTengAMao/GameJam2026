@@ -11,6 +11,8 @@ var sfx_library = {
 	"Bigheal": preload("res://Assests/Sound/heal.mp3"),
 	"DU": preload("res://Assests/Sound/Defenseup.mp3"),
 	"Holy": preload("res://Assests/Sound/Holy.mp3"),
+	"getstone": preload("res://Assests/Sound/getstone.mp3"),
+	"EQ": preload("res://Assests/Sound/EQ.mp3"),
 }
 
 # 🌟 改名為 play_sfx，避免與 AudioStreamPlayer 的內建 play() 衝突

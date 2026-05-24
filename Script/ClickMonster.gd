@@ -35,6 +35,7 @@ func _collect() -> void:
 	# 2. 播放收集音效或特效（可選）
 
 	# 3. 發送訊號通知物件池持有人來回收我
+	
 	monster.collected.emit(monster)
 
 func destroy() -> void:

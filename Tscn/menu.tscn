@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ds7vyeslibxf2"]
 
 [ext_resource type="Texture2D" uid="uid://cwl2hqvolsawb" path="res://Assests/export.png" id="1_wtbr4"]
+[ext_resource type="Texture2D" uid="uid://cclmq28vcoc7k" path="res://Assests/Sprites/Title.png" id="2_0l1wo"]
 [ext_resource type="Script" uid="uid://5mo7hsc2ve32" path="res://Script/Menu/ChangeSceneManager.gd" id="2_5vq8g"]
 
 [node name="Menu" type="Control" unique_id=632046482]
@@ -46,24 +47,14 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Panel/Panel/Control2" unique_id=587870538]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -41.5
-offset_right = 200.0
-offset_bottom = 41.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 60
-text = "No Ocean"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="TextureRect" type="TextureRect" parent="Panel/Panel/Control2" unique_id=1875536860]
+layout_mode = 0
+offset_left = -103.00003
+offset_top = -60.000015
+offset_right = 1433.0
+offset_bottom = 964.0
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("2_0l1wo")
 
 [node name="Panel" type="VBoxContainer" parent="Panel/Panel" unique_id=150775898]
 layout_mode = 2

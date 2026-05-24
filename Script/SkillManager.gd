@@ -118,11 +118,12 @@ func _skill_random_build_land():
 		var lucky_pos = keys.pick_random()
 		
 		# 執行造陸
+		
 		map.grid_data[lucky_pos] = map.CellData.new(map.CellType.LAND, 100)
 		EventManager.simple_map_data[lucky_pos] = "LAND"
 		map.update_all_coasts()
 		EventManager.on_create_land.emit(Vector2(lucky_pos * 128) + Vector2(128/2, 128/2))
-		
+		SFXManager.play_sfx("EQ")
 		print("✅ 成功在座標 ", lucky_pos, " 隨機生成了一塊土地！")
 	else:
 		print("⚠️ 沒有空間可以造陸了！")
