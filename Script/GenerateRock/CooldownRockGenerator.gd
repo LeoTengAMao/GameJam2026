@@ -28,7 +28,7 @@ func _process(delta: float) -> void:
 
 
 func _on_timer_tick() -> void:
-	_spawn_one_rock()
+	_spawn_n_rock()
 
 func _on_remove_area_rock(area: GenerateArea) -> void:
 	if area == null:
@@ -42,6 +42,15 @@ func _on_remove_area_rock(area: GenerateArea) -> void:
 	# 清理防漏
 	if rocks.has(area):
 		rocks.erase(area)
+
+func _spawn_n_rock() -> void:
+	for area in GenerateManager._areas:
+		var spawn_global_pos = GenerateManager.get_spawn_global_position(area)
+		var rock = rock_pool.spawn_rock(spawn_global_pos)
+		
+		if rocks.get(area) == null:
+			rocks[area] = []
+		rocks[area].append(rock)
 
 func _spawn_one_rock() -> void:
 	# 在 GDScript 中，可以直接用 Autoload 的全域名稱 GenerateManager
