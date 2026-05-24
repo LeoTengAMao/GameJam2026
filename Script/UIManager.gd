@@ -44,8 +44,7 @@ const VOLCANO_UPGRADES = [
 # ==========================================
 func _ready() -> void:
 	# 🛡️ 終極防穿透鎖 A：強制側邊欄和按鈕容器「吃掉」滑鼠事件，不漏給底下的地圖
-	EventManager.on_cell_data_changed.connect(_update_volcano_hp)
-	EventManager.on_boss_hp_changed.connect(_update_boss_hp)
+	
 	
 	# 綁定全域廣播訊號
 	EventManager.on_cell_hovered.connect(_on_hover)
@@ -68,20 +67,9 @@ func _process(_delta: float) -> void:
 	if is_showing_tooltip:
 		tooltip.global_position = get_viewport().get_mouse_position() + Vector2(15, 15)
 
-func _update_volcano_hp(pos: Vector2i, info: Dictionary):
-	if info.type == MapManager.CellType.VOLCANO:
-		volcano_hp_bar.value = info.hp	
-		volcano_hp_bar.max_value = info.max_hp
 
-func _update_boss_hp(current_hp: int, max_hp: int):
-	boss_hp_bar.visible = true
-	boss_hp_bar.max_value = max_hp
-	boss_hp_bar.value = current_hp
-	var tween = create_tween()
-	tween.tween_property(boss_hp_bar, "value", current_hp, 0.2)
-		
-	if current_hp <= 0:
-		boss_hp_bar.visible = false
+
+
 
 # ==========================================
 # 4. HUD 更新邏輯

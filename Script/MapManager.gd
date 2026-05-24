@@ -31,8 +31,8 @@ class CellData:
 	
 	var has_turret: bool = false
 	var turret_cooldown: float = 0.0
-	var turret_attack_speed: float = 1.0 # 每秒射擊一次
-	var turret_damage: int = 5
+	var turret_attack_speed: float = 2.0 # 每秒射擊一次
+	var turret_damage: int = 1
 	var turret_range: float = 4.0 # 射程 4 格
 	var turret_anim: AnimatedSprite2D = null
 	func _init(_type: CellType, _max_hp: int, _origin: Vector2i = Vector2i.ZERO):
