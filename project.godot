@@ -22,6 +22,7 @@ GenerateManager="*uid://l8o2rec6pmbl"
 ResourceManager="*uid://sracwmvu4y58"
 Phase="*uid://clmwdgoli04oq"
 SoundManager="*uid://br35onhlv8so1"
+SFXManager="*uid://b3lgkjgp2823t"
 
 [display]
 

@@ -119,6 +119,7 @@ func _process(delta: float) -> void:
 						data.turret_anim.frame = 0
 					
 					_draw_laser(pos, best_target.grid_pos)	
+					SFXManager.play_sfx("laser")
 	
 	
 func _ready():

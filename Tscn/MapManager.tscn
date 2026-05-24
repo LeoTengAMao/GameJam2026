@@ -412,9 +412,6 @@ metadata/_custom_type_script = "uid://dnypkcyv7ouxa"
 
 [node name="MonsterGenerator" type="Node" parent="." unique_id=444276619 node_paths=PackedStringArray("monster_pool", "map_manager")]
 script = ExtResource("14_fxjfw")
-jellyfishWeight = 10
-starfishWeight = 5
-octopusWeight = 5
 monster_pool = NodePath("../MonsterPool")
 map_manager = NodePath("..")
 metadata/_custom_type_script = "uid://3fqndhasy1mx"
